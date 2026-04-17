@@ -34,41 +34,63 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 			seqList = new ArrayList<>();
 			String filename = fastaFile.getName().toString();
 
-			// Erste Zeile auslesen
-			sb.append(br.readLine());
-			System.out.println(sb);
-			System.out.println("xx");
-			
-			// Datei Zeile für Zeile auslesen
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith(">")) {
-
-					// Sequenz-Objekt erzeugen
-					String seqText = sb.toString();
-					int seqPos = seqText.indexOf("]");
-					String header = seqText.substring(0, seqPos + 1);
-					String sequence = seqText.substring(seqPos + 1);
-					Sequence sq = new Sequence(filename, header, sequence);
-					seqList.add(sq);
-
-					// StringBuffer zurücksetzen
-					sb.setLength(0);
+			// Checken ob die Fasta überhaupt was enthält
+			// und das Zeug am Anfang wegschneiden
+			String line = null;
+			while(true) {
+				line = br.readLine();
+				// Rausspringen, falls Fasta leer
+				if (line == null) {
+					System.err.println("Fasta-Datei ist leer.\nEinlesen abgebrochen.");
+					br.close();
+					return;
 				}
-				sb.append(line);
+				line.trim();
+				if (line.startsWith(">")) {
+					sb.append(line);
+					break;
+				}
 			}
 
-			// Letztes Sequenz-Objekt erzeugen
-			String seqText = sb.toString();
-			int seqPos = seqText.indexOf("]");
-			String header = seqText.substring(0, seqPos + 1);
-			String sequence = seqText.substring(seqPos + 1);
-			Sequence sq = new Sequence(filename, header, sequence);
-			seqList.add(sq);
-
+			// while (true) loop
+			while(true) {
+				// readline bis > oder bis readline == null
+				line = br.readLine();
+				if (line == null || line.startsWith(">")) {
+					// sequenz objekt erzeugen und in die pipe stecken
+					// dabei trailing spaces und linebreaks trimmen
+					String seqText = sb.toString();
+					// StringBuffer zurücksetzen
+					sb.setLength(0);
+					// white spaces entfernen (vorne können keine sein)
+					seqText.stripTrailing();
+					// Header extrahieren
+					int seqPos = seqText.indexOf("]");
+					// wenn Sequenz abgeschnitten, sofort rausspringen
+					if (seqPos == -1) { 
+						System.err.println(
+								"Unvollständigen Header gelesen.\n" + 
+								"Einlesen abgebrochen.");
+						br.close();
+						return;
+					}					
+					String header = seqText.substring(0, seqPos + 1);
+					String sequence = seqText.substring(seqPos + 1);
+					Sequence seq = new Sequence(filename, header, sequence);
+					// TODO in pipe umschreiben
+					seqList.add(seq);
+				}
+				// Beim Ende der Datei aus Schleife springen
+				if (line == null) {
+					System.out.println("Ende der Datei erreicht.\nEinlesen beendet.");
+					break;
+				}
+				// Zeile an Stringbuilder anhängen
+				sb.append(line);
+			}
 			// BufferedReader schließen
 			br.close();
-
+			// TODO in pipe umschreiben
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
 		}
