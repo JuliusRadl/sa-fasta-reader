@@ -122,10 +122,17 @@ public class Experiments {
 			// Path definieren
 			Path fastaPath = Paths.get("src/main/resources/mgProteome.fasta");
 			File fastaFile = fastaPath.toFile();
+			
+			//Pipe
+			PipedInputStream pis = new PipedInputStream();
+			PipedOutputStream pos = new PipedOutputStream();
+			pis.connect(pos);
+			ObjectInputStream ois = new ObjectInputStream(pis);
+			ObjectOutputStream oos = new ObjectOutputStream(pos);
 
 			// In eigenem Thread einlesen
 			ExecutorService ex = Executors.newSingleThreadExecutor();
-			Callable<ArrayList<Sequence>> task = new SequenceReadTask(fastaFile);
+			Callable<ArrayList<Sequence>> task = new SequenceReadTask(fastaFile, oos);
 			Future<ArrayList<Sequence>> future = ex.submit(task);
 			ArrayList<Sequence> seqList = future.get();
 

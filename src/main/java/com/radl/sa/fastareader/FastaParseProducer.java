@@ -4,22 +4,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
+import java.io.ObjectOutputStream;
 
-public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>> {
+public class FastaParseProducer implements Runnable {
 
 	// File statt Path, um "Time Of Read vs Time of Use" Probleme zu vermeiden
 	private File fastaFile;
-	private ArrayList<Sequence> seqList;
+	private ObjectOutputStream oos;
 	
-	public SequenceReadTask(File fastaFile) {
+	public FastaParseProducer(File fastaFile, ObjectOutputStream oos) {
 		this.fastaFile = fastaFile;
-	}
-
-	public ArrayList<Sequence> call() {
-		run();
-		return(seqList);
+		this.oos = oos;
+		
 	}
 
 	public void run() {
@@ -31,7 +27,6 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fastaFile));
 			StringBuffer sb = new StringBuffer();
-			seqList = new ArrayList<>();
 			String filename = fastaFile.getName().toString();
 
 			// Checken ob die Fasta überhaupt was enthält
@@ -77,8 +72,8 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 					String header = seqText.substring(0, seqPos + 1);
 					String sequence = seqText.substring(seqPos + 1);
 					Sequence seq = new Sequence(filename, header, sequence);
-					// TODO in pipe umschreiben
-					seqList.add(seq);
+					oos.writeObject(seq);
+					oos.flush();
 				}
 				// Beim Ende der Datei aus Schleife springen
 				if (line == null) {
@@ -90,7 +85,6 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 			}
 			// BufferedReader schließen
 			br.close();
-			// TODO in pipe umschreiben
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
 		}
