@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -122,16 +123,30 @@ public class Experiments {
 			// Path definieren
 			Path fastaPath = Paths.get("src/main/resources/mgProteome.fasta");
 			File fastaFile = fastaPath.toFile();
+			
+			// Pipe
+			PipedInputStream pis = new PipedInputStream();
+			PipedOutputStream pos = new PipedOutputStream();
+			pis.connect(pos);
+			ObjectOutputStream oos = new ObjectOutputStream(pos);
+			ObjectInputStream ois = new ObjectInputStream(pis);
 
 			// In eigenem Thread einlesen
-			ExecutorService ex = Executors.newSingleThreadExecutor();
-			Callable<ArrayList<Sequence>> task = new SequenceReadTask(fastaFile);
-			Future<ArrayList<Sequence>> future = ex.submit(task);
-			ArrayList<Sequence> seqList = future.get();
-
+			ArrayList<Sequence> seqList = new ArrayList<Sequence>();
+			FastaParseProducer producer = new FastaParseProducer (fastaFile, oos);
+			FastaParseConsumer consumer = new FastaParseConsumer(ois, seqList);
+			CompletableFuture<Void> prodFuture = CompletableFuture.runAsync(producer);
+			CompletableFuture<Void> conFuture = CompletableFuture.runAsync(consumer);
+			prodFuture.join();
+			// OOS schließen, um Signal zu geben, dass keine weiteren Objekte kommen
+			oos.close();
+			conFuture.join();
+			ois.close();
+			
 			// Anzeigen lassen
 			for (Sequence seq : seqList) {
 				System.out.println(seq.toString() + "\n");
+				Thread.sleep(100);
 			}
 
 			// Liste abspeichern
@@ -157,7 +172,7 @@ public class Experiments {
 
 			// In eigenem Thread einlesen
 			ExecutorService ex = Executors.newSingleThreadExecutor();
-			Callable<ArrayList<Sequence>> task = new SequenceReadTask(fastaFile);
+			Callable<ArrayList<Sequence>> task = new FastaParseConsumer(fastaFile);
 			Future<ArrayList<Sequence>> future = ex.submit(task);
 			ArrayList<Sequence> seqList = future.get();
 			
@@ -210,7 +225,7 @@ public class Experiments {
 			File fastaFile = fastaPath.toFile();
 			
 			ExecutorService ex = Executors.newSingleThreadExecutor();
-			Callable<ArrayList<Sequence>> task = new SequenceReadTask(fastaFile);
+			Callable<ArrayList<Sequence>> task = new FastaParseConsumer(fastaFile);
 			Future<ArrayList<Sequence>> future = ex.submit(task);
 			try {
 				ArrayList<Sequence> seqList = future.get();

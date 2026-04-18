@@ -4,22 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>> {
+public class SequenceReadTask implements Runnable {
 
 	// File statt Path, um "Time Of Read vs Time of Use" Probleme zu vermeiden
 	private File fastaFile;
-	private ArrayList<Sequence> seqList;
+	private ObjectOutputStream oos;
 	
-	public SequenceReadTask(File fastaFile) {
+	public SequenceReadTask(File fastaFile, ObjectOutputStream oos) {
 		this.fastaFile = fastaFile;
-	}
-
-	public ArrayList<Sequence> call() {
-		run();
-		return(seqList);
+		this.oos = oos;
 	}
 
 	public void run() {
@@ -31,7 +28,6 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fastaFile));
 			StringBuffer sb = new StringBuffer();
-			seqList = new ArrayList<>();
 			String filename = fastaFile.getName().toString();
 
 			// Checken ob die Fasta überhaupt was enthält
@@ -77,8 +73,13 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 					String header = seqText.substring(0, seqPos + 1);
 					String sequence = seqText.substring(seqPos + 1);
 					Sequence seq = new Sequence(filename, header, sequence);
-					// TODO in pipe umschreiben
-					seqList.add(seq);
+					System.out.println(
+									"Schreibe Sequenz " +
+									seq.getHeader().substring(0, 20) + "...");
+					oos.writeObject(seq);
+					oos.flush();
+					// TODO entfernen
+					Thread.sleep(100);
 				}
 				// Beim Ende der Datei aus Schleife springen
 				if (line == null) {
@@ -93,6 +94,9 @@ public class SequenceReadTask implements Runnable, Callable<ArrayList<Sequence>>
 			// TODO in pipe umschreiben
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
+		} catch (InterruptedException e) {
+			// Falls mein sleep interrupted wurde
+			e.printStackTrace();
 		}
 	}
 
