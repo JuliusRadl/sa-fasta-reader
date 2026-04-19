@@ -97,9 +97,11 @@ public class FastaParseProducer implements Runnable {
 		} catch (InterruptedException e) {
 			// Falls mein sleep interrupted wurde
 			e.printStackTrace();
+		// Garantieren, dass Stream geschlossen wird, und zwar durch Producer,
+		// um Kontrolle über EOF-Signal im Thread zu haben
 		} finally {
 			try {
-				// OOS schließen, um Signal zu geben, dass keine weiteren Objekte kommen
+				// OOS schließen, um EOF-Signal zu geben, dass keine weiteren Objekte kommen
 				oos.close();
 			} catch (IOException e) {
 				System.err.println("Fehler beim Schließen des Output-Streams.");
