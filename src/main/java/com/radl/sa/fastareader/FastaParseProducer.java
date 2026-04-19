@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 public class FastaParseProducer implements Runnable {
 
@@ -91,7 +89,6 @@ public class FastaParseProducer implements Runnable {
 			}
 			// BufferedReader schließen
 			br.close();
-			// TODO in pipe umschreiben
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
 		} catch (InterruptedException e) {

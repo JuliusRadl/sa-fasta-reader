@@ -16,3 +16,11 @@ Feedback Schmidt:
 
 Sonstiges:
 -Repository auf Github laden
+
+To do:
+-Model erstellen
+-JsonParser Consumer & Producer
+-Json Parsing-Methode
+-Duplicate Checking mit Hashmaps?
+-Update-List-Methode, die nach SwingWorker aufgerufen wird
+-Runnables zu Swingworkern machen
