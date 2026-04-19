@@ -40,11 +40,15 @@ public class RestoreSequenceListTask implements Runnable {
 				System.out.println("Stopfe Sequenz " + seq.getHeader().substring(0, 20) + "..." + " in Pipe.");
 				oos.writeObject(seq);
 			}
-			
-			oos.close();
-
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
+		} finally {
+			try {
+				oos.close();
+			} catch (IOException e) {
+				System.err.println("Fehler beim Schließen des Streams");
+				e.printStackTrace();
+			}
 		}
 	}
 

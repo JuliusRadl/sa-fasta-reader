@@ -15,7 +15,6 @@ public class FastaParseProducer implements Runnable {
 	public FastaParseProducer(File fastaFile, ObjectOutputStream oos) {
 		this.fastaFile = fastaFile;
 		this.oos = oos;
-		
 	}
 
 	public void run() {
@@ -72,8 +71,13 @@ public class FastaParseProducer implements Runnable {
 					String header = seqText.substring(0, seqPos + 1);
 					String sequence = seqText.substring(seqPos + 1);
 					Sequence seq = new Sequence(filename, header, sequence);
+					System.out.println(
+									"Schreibe Sequenz " +
+									seq.getHeader().substring(0, 20) + "...");
 					oos.writeObject(seq);
 					oos.flush();
+					// TODO entfernen
+					Thread.sleep(10);
 				}
 				// Beim Ende der Datei aus Schleife springen
 				if (line == null) {
@@ -87,6 +91,19 @@ public class FastaParseProducer implements Runnable {
 			br.close();
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
+		} catch (InterruptedException e) {
+			// Falls mein sleep interrupted wurde
+			e.printStackTrace();
+		// Garantieren, dass Stream geschlossen wird, und zwar durch Producer,
+		// um Kontrolle über EOF-Signal im Thread zu haben
+		} finally {
+			try {
+				// OOS schließen, um EOF-Signal zu geben, dass keine weiteren Objekte kommen
+				oos.close();
+			} catch (IOException e) {
+				System.err.println("Fehler beim Schließen des Output-Streams.");
+				e.printStackTrace();
+			}
 		}
 	}
 
