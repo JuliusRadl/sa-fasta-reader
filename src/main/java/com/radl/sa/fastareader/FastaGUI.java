@@ -99,7 +99,7 @@ public class FastaGUI extends JFrame {
 			int returnVal = fileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-				Callable<ArrayList<Sequence>>srt = new SequenceReadTask(file);
+				Callable<ArrayList<Sequence>>srt = new FastaParseProducer(file);
 				Future<ArrayList<Sequence>> future = ex.submit(srt);
 				try {
 					ArrayList<Sequence> seqList = future.get();

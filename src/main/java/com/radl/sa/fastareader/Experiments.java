@@ -137,16 +137,15 @@ public class Experiments {
 			FastaParseConsumer consumer = new FastaParseConsumer(ois, seqList);
 			CompletableFuture<Void> prodFuture = CompletableFuture.runAsync(producer);
 			CompletableFuture<Void> conFuture = CompletableFuture.runAsync(consumer);
+			// TODO join direkt danach total sinnlos, weil dann der main thread
+			// sofort blockiert wird
 			prodFuture.join();
-			// OOS schließen, um Signal zu geben, dass keine weiteren Objekte kommen
-			oos.close();
 			conFuture.join();
-			ois.close();
 			
 			// Anzeigen lassen
 			for (Sequence seq : seqList) {
 				System.out.println(seq.toString() + "\n");
-				Thread.sleep(100);
+				Thread.sleep(10);
 			}
 
 			// Liste abspeichern

@@ -12,6 +12,7 @@ Feedback Schmidt:
 -Dann Objekt für Objekt in die Pipe stecken (evtl. sleep einbauen) => Infos für Notify stehen in Leßke-Unterlagen
 -Speicher freigeben, Referenzen löschen sehr wichtig
 -Manchmal GarbageCollector manuell aufrufen, sonst kann er CPU hoggen, wenn viel auf einmal aufgeräumt werden muss
+-Fürs Error Handling gibt's in Unternehmen meistens Guidelines, kann auf viele Arten gemacht werden
 
 Sonstiges:
 -Repository auf Github laden

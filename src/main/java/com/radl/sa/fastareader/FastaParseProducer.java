@@ -8,13 +8,13 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class SequenceReadTask implements Runnable {
+public class FastaParseProducer implements Runnable {
 
 	// File statt Path, um "Time Of Read vs Time of Use" Probleme zu vermeiden
 	private File fastaFile;
 	private ObjectOutputStream oos;
 	
-	public SequenceReadTask(File fastaFile, ObjectOutputStream oos) {
+	public FastaParseProducer(File fastaFile, ObjectOutputStream oos) {
 		this.fastaFile = fastaFile;
 		this.oos = oos;
 	}
@@ -79,7 +79,7 @@ public class SequenceReadTask implements Runnable {
 					oos.writeObject(seq);
 					oos.flush();
 					// TODO entfernen
-					Thread.sleep(100);
+					Thread.sleep(10);
 				}
 				// Beim Ende der Datei aus Schleife springen
 				if (line == null) {
@@ -97,6 +97,14 @@ public class SequenceReadTask implements Runnable {
 		} catch (InterruptedException e) {
 			// Falls mein sleep interrupted wurde
 			e.printStackTrace();
+		} finally {
+			try {
+				// OOS schließen, um Signal zu geben, dass keine weiteren Objekte kommen
+				oos.close();
+			} catch (IOException e) {
+				System.err.println("Fehler beim Schließen des Output-Streams.");
+				e.printStackTrace();
+			}
 		}
 	}
 
