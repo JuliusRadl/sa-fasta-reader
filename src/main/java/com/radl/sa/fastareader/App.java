@@ -16,38 +16,23 @@ public class App {
 
 	public static void main(String[] args) throws Exception {
 		
-//		FlatLightLaf.setup();
-//		FastaGUI fg = new FastaGUI("FASTA-Manager", 500);
-//		fg.setVisible(true);
+		FastaModel fm = new FastaModel();
+		
+		FlatLightLaf.setup();
+		FastaView fv = new FastaView("FASTA-Manager", 500);
+		fv.setVisible(true);
+		
+		FastaController fc = new FastaController(fm, fv);
+		// TODO soll der View wirklich was vom Controller wissen?
+		fv.setController(fc);
 		
 //		Experiments.doExperiment1();
 //		Experiments.doExperiment2();
 //		Experiments.doExperiment3();
 //		Experiments.doExperimentNio();
-		Experiments.doExperimentSeqReader();
+//		Experiments.doExperimentSeqReader();
 //		Experiments.doExperimentSerializable();
 //		Experiments.doExperimentPipe();
 //		Experiments.doExperimentGUI();
-	}
-	
-	public void processFasta(File f, ArrayList<Sequence> seqList) throws IOException {
-		
-		// Pipe aufbauen
-		PipedOutputStream pos = new PipedOutputStream();
-		PipedInputStream pis = new PipedInputStream();
-		pis.connect(pos);
-		ObjectOutputStream oos = new ObjectOutputStream(pos);
-		ObjectInputStream ois = new ObjectInputStream(pis);
-		
-		FastaParseProducer producer = new FastaParseProducer(f, oos);
-		FastaParseConsumer consumer = new FastaParseConsumer(ois, seqList);
-		
-		// TODO Executors ins Model übertragen als Instanzvariable
-		ExecutorService ex = Executors.newFixedThreadPool(2);
-		ex.submit(producer);
-		ex.submit(consumer);
-		
-		// Die Pipe verschwindet beim Verlassen der Methode nicht,
-		// weil die Threads immer noch Referenzen darauf halten
 	}
 }

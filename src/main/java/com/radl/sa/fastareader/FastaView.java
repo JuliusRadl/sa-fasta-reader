@@ -20,9 +20,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class FastaGUI extends JFrame {
+public class FastaView extends JFrame {
 
 	private DefaultListModel<Sequence> seqList;
+	private FastaController fc;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -33,7 +34,7 @@ public class FastaGUI extends JFrame {
 	private JTextArea selectedSeq;
 	private JButton parse, save, read;
 
-	public FastaGUI(String title, int hoehe) {
+	public FastaView(String title, int hoehe) {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize((int) (hoehe * 0.7), hoehe);
@@ -94,19 +95,13 @@ public class FastaGUI extends JFrame {
 			}
 		});
 		
+		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
 		parse.addActionListener(event -> {
 			
 			int returnVal = fileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-				Callable<ArrayList<Sequence>>srt = new FastaParseProducer(file);
-				Future<ArrayList<Sequence>> future = ex.submit(srt);
-				try {
-					ArrayList<Sequence> seqList = future.get();
-					setSeqList(seqList);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+	            fc.pressedParseButton(file);
 			}
 			
 		});
@@ -161,8 +156,13 @@ public class FastaGUI extends JFrame {
 		});
 
 	}
+	
+	public void displayError(String error) {
+		// TODO Fehler anzeigen
+	}
 
-	public void setSeqList(ArrayList<Sequence> seqList) {
+	// TODO besser updaten, oder passt es schon so?
+	public void updateSeqList(ArrayList<Sequence> seqList) {
 		// Objekte in DefaultListModel schieben
 		this.seqList.clear();
 		for (Sequence seq : seqList) {
@@ -177,6 +177,10 @@ public class FastaGUI extends JFrame {
 			sl.add(it.next());
 		}
 		return sl;
+	}
+	
+	public void setController(FastaController fc) {
+		this.fc = fc;
 	}
 	
 }

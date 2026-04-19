@@ -23,4 +23,5 @@ To do:
 -Json Parsing-Methode
 -Duplicate Checking mit Hashmaps?
 -Update-List-Methode, die nach SwingWorker aufgerufen wird
--Runnables zu Swingworkern machen
+-Action Listener bleiben im View, der den Controller benachrichtigt
+-Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
