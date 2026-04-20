@@ -119,9 +119,7 @@ public class FastaView extends JFrame {
 			int returnVal = fileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-				ex.submit(new SaveListTask(getSeqList(), file));
-				// nach shutdown() werden laufende Threads noch beendet,
-				// aber keine neuen mehr angenommen
+	            fc.pressedSaveButton(file);
 			}
 		});
 		

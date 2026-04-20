@@ -1,6 +1,7 @@
 package com.radl.sa.fastareader;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class FastaModel {
 
@@ -42,6 +46,21 @@ public class FastaModel {
 		// Synchronisierung, damit aufrufbar von SwingWorker
 		// Futures zu einem Objekt kombinieren und darauf warten
 		CompletableFuture.allOf(prodFuture, conFuture).join();
+	}
+	
+	
+	public void saveSeqList(File f) throws IOException {
+		// Eigener Thread macht hier eig keinen Sinn, wenn ich die Methode
+		// später in einem SwingWorker aufrufe. Ich will ja gar nicht, dass
+		// zb parseFasta gleichzeitig aufgerufen werden kann. Diese Methode
+		// darf ruhig blockieren
+		// Die Aufgabenstellung ist mit dem SwingWorker schon erfüllt: Das
+		// Abspeichern passiert nicht im Event Dispatch Thread (GUI)
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		FileWriter fw = new FileWriter(f);
+		gson.toJson(seqList, fw);
+		// Ganz wichtig: Writer schließen, sonst wird Json nicht richtig terminiert
+		fw.close();
 	}
 	
 	public ArrayList<Sequence> getSeqList() {
