@@ -22,6 +22,7 @@ public class RestoreSequenceListTask implements Runnable {
 	}
 
 	public void run() {
+		
 		if (!seqListFile.exists()) {
 			System.out.println("Keine gültige Datei");
 			return;

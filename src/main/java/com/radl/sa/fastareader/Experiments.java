@@ -216,7 +216,7 @@ public class Experiments {
 		static void doExperimentGUI() {
 			// GUI aufrufen
 			FlatLightLaf.setup();
-			FastaGUI fg = new FastaGUI("FASTA-Manager", 500);
+			FastaView fg = new FastaView("FASTA-Manager", 500);
 			fg.setVisible(true);
 
 			// Sequenzen einlesen

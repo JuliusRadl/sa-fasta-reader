@@ -1,7 +1,3 @@
-Was könnte man besser machen?
--Model-View-Controller implementieren. Habe viel Logik in GUI-Klasse
--Swing-Worker-Threads verwenden statt ExecutorService
-
 Feedback Schmidt:
 -Parser funktioniert nicht, wenn zb vorne in FASTA Kommentar steht: Muss möglichst wenig Annahmen treffen über Input
 -Soll mich für Parser an ">" als Sequenzstarter orientieren
@@ -17,10 +13,19 @@ Feedback Schmidt:
 Sonstiges:
 -Repository auf Github laden
 
+Erkenntnisse:
+-Sinn von MVC ist es, Darstellung und Logik zu entkoppeln. Das Modell soll nichts von allem andere wissen
+-Bei MVP noch stärker: View komplett dumb, kann nur Presenter über Clicks etc. benachrichtigen, der dann alles weitere handelt,
+View weiß auch nichts von Model
+-Action Listener bleiben im View, der den Controller benachrichtigt
+
 To do:
--Model erstellen
+-Model erstellen DONE
 -JsonParser Consumer & Producer
 -Json Parsing-Methode
 -Duplicate Checking mit Hashmaps?
--Update-List-Methode, die nach SwingWorker aufgerufen wird
--Runnables zu Swingworkern machen
+-Update-List-Methode, die nach SwingWorker aufgerufen wird DONE
+-Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
+-Alle Buttons disablen oder busy state, wenn einer gedrückt wurde DONE
+-Fehler-Anzeige mit SwingWorkern handeln...
+-Confirm-Fenster für Einlesen und Abspeichern anzeigen

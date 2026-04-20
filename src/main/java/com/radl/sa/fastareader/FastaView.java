@@ -20,9 +20,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class FastaGUI extends JFrame {
+public class FastaView extends JFrame {
 
 	private DefaultListModel<Sequence> seqList;
+	private FastaController fc;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -31,9 +32,11 @@ public class FastaGUI extends JFrame {
 	private JLabel seqListLabel;
 	private JList<Sequence> seqListList;
 	private JTextArea selectedSeq;
+	// Liste, um Buttons alle auf einmal zu disablen
+	private ArrayList<JButton> bl;
 	private JButton parse, save, read;
 
-	public FastaGUI(String title, int hoehe) {
+	public FastaView(String title, int hoehe) {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize((int) (hoehe * 0.7), hoehe);
@@ -48,6 +51,7 @@ public class FastaGUI extends JFrame {
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
 		ex = Executors.newFixedThreadPool(2);
+		bl = new ArrayList<JButton>();
 
 		JPanel north = new JPanel();
 		seqListLabel = new JLabel("Liste der Sequenzobjekte");
@@ -72,10 +76,13 @@ public class FastaGUI extends JFrame {
 		JPanel south = new JPanel();
 		parse = new JButton("FASTA einlesen");
 		parse.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(parse);
 		save = new JButton("Sequenz-Liste speichern");
 		save.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(save);
 		read = new JButton("Sequenz-Liste von Backup einlesen");
 		read.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(read);
 		south.setLayout(new BoxLayout(south, BoxLayout.PAGE_AXIS));
 		south.add(parse);
 		south.add(save);
@@ -94,19 +101,16 @@ public class FastaGUI extends JFrame {
 			}
 		});
 		
+		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
+		// TODO als Model View Presenter umschreiben, dh auch der Aufruf des 
+		// FileChoosers ist Sache des Presenters (Controller), View benachrichtigt
+		// nur
 		parse.addActionListener(event -> {
 			
 			int returnVal = fileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-				Callable<ArrayList<Sequence>>srt = new FastaParseProducer(file);
-				Future<ArrayList<Sequence>> future = ex.submit(srt);
-				try {
-					ArrayList<Sequence> seqList = future.get();
-					setSeqList(seqList);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+	            fc.pressedParseButton(file);
 			}
 			
 		});
@@ -115,9 +119,7 @@ public class FastaGUI extends JFrame {
 			int returnVal = fileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-				ex.submit(new SaveListTask(getSeqList(), file));
-				// nach shutdown() werden laufende Threads noch beendet,
-				// aber keine neuen mehr angenommen
+	            fc.pressedSaveButton(file);
 			}
 		});
 		
@@ -161,8 +163,13 @@ public class FastaGUI extends JFrame {
 		});
 
 	}
+	
+	public void displayError(String error) {
+		// TODO Fehler anzeigen
+	}
 
-	public void setSeqList(ArrayList<Sequence> seqList) {
+	// TODO besser updaten, oder passt es schon so?
+	public void updateSeqList(ArrayList<Sequence> seqList) {
 		// Objekte in DefaultListModel schieben
 		this.seqList.clear();
 		for (Sequence seq : seqList) {
@@ -177,6 +184,16 @@ public class FastaGUI extends JFrame {
 			sl.add(it.next());
 		}
 		return sl;
+	}
+	
+	public void setController(FastaController fc) {
+		this.fc = fc;
+	}
+	
+	public void setButtonsEnabled(boolean enabled) {
+		for (JButton b : bl) {
+			b.setEnabled(enabled);
+		}
 	}
 	
 }
