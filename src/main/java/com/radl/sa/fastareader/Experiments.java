@@ -194,7 +194,7 @@ public class Experiments {
 			ObjectOutputStream oos = new ObjectOutputStream(pos);
 			ObjectInputStream ois = new ObjectInputStream(pis);
 			
-			RestoreSequenceListTask rs = new RestoreSequenceListTask(seqListFile, oos);
+			BackupParseProducer rs = new BackupParseProducer(seqListFile, oos);
 			Thread t = new Thread(rs);
 			t.start();
 			
