@@ -25,3 +25,4 @@ To do:
 -Update-List-Methode, die nach SwingWorker aufgerufen wird
 -Action Listener bleiben im View, der den Controller benachrichtigt
 -Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
+-Alle Buttons disablen oder busy state, wenn einer gedrückt wurde

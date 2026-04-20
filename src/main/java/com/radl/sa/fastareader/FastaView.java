@@ -32,6 +32,8 @@ public class FastaView extends JFrame {
 	private JLabel seqListLabel;
 	private JList<Sequence> seqListList;
 	private JTextArea selectedSeq;
+	// Liste, um Buttons alle auf einmal zu disablen
+	private ArrayList<JButton> bl;
 	private JButton parse, save, read;
 
 	public FastaView(String title, int hoehe) {
@@ -49,6 +51,7 @@ public class FastaView extends JFrame {
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
 		ex = Executors.newFixedThreadPool(2);
+		bl = new ArrayList<JButton>();
 
 		JPanel north = new JPanel();
 		seqListLabel = new JLabel("Liste der Sequenzobjekte");
@@ -73,10 +76,13 @@ public class FastaView extends JFrame {
 		JPanel south = new JPanel();
 		parse = new JButton("FASTA einlesen");
 		parse.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(parse);
 		save = new JButton("Sequenz-Liste speichern");
 		save.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(save);
 		read = new JButton("Sequenz-Liste von Backup einlesen");
 		read.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(read);
 		south.setLayout(new BoxLayout(south, BoxLayout.PAGE_AXIS));
 		south.add(parse);
 		south.add(save);
@@ -96,6 +102,9 @@ public class FastaView extends JFrame {
 		});
 		
 		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
+		// TODO als Model View Presenter umschreiben, dh auch der Aufruf des 
+		// FileChoosers ist Sache des Presenters (Controller), View benachrichtigt
+		// nur
 		parse.addActionListener(event -> {
 			
 			int returnVal = fileChooser.showOpenDialog(this);
@@ -181,6 +190,12 @@ public class FastaView extends JFrame {
 	
 	public void setController(FastaController fc) {
 		this.fc = fc;
+	}
+	
+	public void setButtonsEnabled(boolean enabled) {
+		for (JButton b : bl) {
+			b.setEnabled(enabled);
+		}
 	}
 	
 }
