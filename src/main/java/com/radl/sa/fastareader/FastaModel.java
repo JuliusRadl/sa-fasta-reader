@@ -35,12 +35,22 @@ public class FastaModel {
 		ObjectOutputStream oos = new ObjectOutputStream(pos);
 		ObjectInputStream ois = new ObjectInputStream(pis);
 
-		FastaParseProducer producer = new FastaParseProducer(f, oos);
-		FastaParseConsumer consumer = new FastaParseConsumer(ois, seqList);
-		
+		// kein Input Validation hier, ist glaub ich eher Aufgabe des Controllers
+		int extPos = f.getName().lastIndexOf(".");
+		String extension = f.getName().substring(extPos + 1);
+		Runnable producer;
+		if (extension == ".fasta") {
+			producer = new FastaParseProducer(f, oos);
+		} else {
+			producer = new BackupParseProducer(f, oos);
+		}
+		Runnable consumer = new FastaParseConsumer(ois, seqList);
+	
+
 		// CompletableFuture eig vor allem für Verkettung von async Tasks, ohne
 		// wie beim Callable jedesmal mit get zu warten
-		CompletableFuture<Void> prodFuture = CompletableFuture.runAsync(producer, ex);
+		// TODO je nach File extension anderen Producer aufrufen
+		CompletableFuture<Void> prodFuture = CompletableFuture.runAsync(producer, ex);		
 		CompletableFuture<Void> conFuture = CompletableFuture.runAsync(consumer, ex);
 
 		// Synchronisierung, damit aufrufbar von SwingWorker

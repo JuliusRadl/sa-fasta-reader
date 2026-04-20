@@ -34,7 +34,7 @@ public class FastaView extends JFrame {
 	private JTextArea selectedSeq;
 	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
-	private JButton parse, save, read;
+	private JButton parse, save;
 
 	public FastaView(String title, int hoehe) {
 		super(title);
@@ -80,13 +80,9 @@ public class FastaView extends JFrame {
 		save = new JButton("Sequenz-Liste speichern");
 		save.setAlignmentX(CENTER_ALIGNMENT);
 		bl.add(save);
-		read = new JButton("Sequenz-Liste von Backup einlesen");
-		read.setAlignmentX(CENTER_ALIGNMENT);
-		bl.add(read);
 		south.setLayout(new BoxLayout(south, BoxLayout.PAGE_AXIS));
 		south.add(parse);
 		south.add(save);
-		south.add(read);
 		south.setBackground(Color.black);
 		add(south, BorderLayout.SOUTH);
 
@@ -121,45 +117,6 @@ public class FastaView extends JFrame {
 	            File file = fileChooser.getSelectedFile();
 	            fc.pressedSaveButton(file);
 			}
-		});
-		
-		read.addActionListener(event -> {
-			int returnVal = fileChooser.showOpenDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            File file = fileChooser.getSelectedFile();
-	            
-	            PipedOutputStream pos = new PipedOutputStream();
-	    		PipedInputStream pis = new PipedInputStream();
-
-	    		try {
-					pis.connect(pos);
-					ObjectOutputStream oos = new ObjectOutputStream(pos);
-		    		ObjectInputStream ois = new ObjectInputStream(pis);
-		    		
-		    		RestoreSequenceListTask rs = new RestoreSequenceListTask(file, oos);
-					ex.submit(rs);
-					
-					while(true) {
-						try {
-							Sequence seq = (Sequence) ois.readObject();
-							System.out.println("Lese Sequenz " + seq.getHeader().substring(0, 20) + "...");
-							seqList.addElement(seq);
-						} catch (EOFException e) {
-							System.out.println("ObjectOutputStream geschlossen, keine weiteren Sequenzen.");
-							break;
-						} catch (IOException e) {
-						} catch (ClassNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}			
-					}
-					ois.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}	    		
-			}
-			
 		});
 
 	}
