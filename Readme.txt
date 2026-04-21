@@ -9,6 +9,9 @@ Feedback Schmidt:
 -Speicher freigeben, Referenzen löschen sehr wichtig
 -Manchmal GarbageCollector manuell aufrufen, sonst kann er CPU hoggen, wenn viel auf einmal aufgeräumt werden muss
 -Fürs Error Handling gibt's in Unternehmen meistens Guidelines, kann auf viele Arten gemacht werden
+-Interface vor allem für Controller nützlich, wenn man später GUI weglassen und Logik automatisieren will (zb auch bei Tests)
+-Funktionen zum Datenfluss im Model sind ok, aber Business Logik gehört eigentlich in Controller
+-Interfaces nach Konvention mit I im Namen beginnen
 
 Sonstiges:
 -Repository auf Github laden
@@ -29,8 +32,4 @@ To do:
 -Alle Buttons disablen oder busy state, wenn einer gedrückt wurde DONE
 -Fehler-Anzeige mit SwingWorkern handeln...
 -Confirm-Fenster für Einlesen und Abspeichern anzeigen
-
-Fragen für Feedback:
--Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...
--Hab mir jetzt gedacht, Error Handling betreibt der Controller, damit ich sie notfalls anzeigen kann, deswegen throws im Model
--Tipps für die Browser-Aufgabe? Wie soll ein externer Browser wieder aus dem Programm heraus geschlossen werden und warum
+-Swing Integrate Desktop Class -> Default Programme (zb Browser) aufrufen
