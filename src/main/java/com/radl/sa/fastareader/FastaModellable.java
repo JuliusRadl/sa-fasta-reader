@@ -9,4 +9,6 @@ public interface FastaModellable {
 	// Das Modell soll komplett unabhängig sein und nichts über View oder
 	// Controller wissen, deshalb kein Setter
 	// public void setController(FastaController fc);
+	
+	public void saveSeqList();
 }

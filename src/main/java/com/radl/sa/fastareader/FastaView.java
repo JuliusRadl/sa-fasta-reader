@@ -1,24 +1,28 @@
 package com.radl.sa.fastareader;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.io.EOFException;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class FastaView extends JFrame {
 
@@ -27,7 +31,6 @@ public class FastaView extends JFrame {
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
-	private final ExecutorService ex;
 
 	private JLabel seqListLabel;
 	private JList<Sequence> seqListList;
@@ -50,7 +53,6 @@ public class FastaView extends JFrame {
 		fileChooser = new JFileChooser();
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
-		ex = Executors.newFixedThreadPool(2);
 		bl = new ArrayList<JButton>();
 
 		JPanel north = new JPanel();
@@ -86,6 +88,7 @@ public class FastaView extends JFrame {
 		south.setBackground(Color.black);
 		add(south, BorderLayout.SOUTH);
 
+		// TODO gehört der in den Controller?
 		seqListList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -132,15 +135,6 @@ public class FastaView extends JFrame {
 		for (Sequence seq : seqList) {
 			this.seqList.addElement(seq);
 		}
-	}
-	
-	public ArrayList<Sequence> getSeqList() {
-		ArrayList<Sequence> sl = new ArrayList<>();
-		Iterator<Sequence> it = seqList.elements().asIterator();
-		while(it.hasNext()) {
-			sl.add(it.next());
-		}
-		return sl;
 	}
 	
 	public void setController(FastaController fc) {
