@@ -78,6 +78,10 @@ public class FastaController implements FastaControllable {
 		sw.execute();
 	}
 	
+	public void pressedBrowserButton() {
+		fv.openBrowser();
+	}
+	
 	public void setView(FastaView fv) {
 		this.fv = fv;
 	}

@@ -25,6 +25,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class FastaView extends JFrame {
+	
+	public final int BROWSER_SIZE = 500;
 
 	private DefaultListModel<Sequence> seqList;
 	private FastaController fc;
@@ -36,14 +38,16 @@ public class FastaView extends JFrame {
 	private JList<Sequence> seqListList;
 	private JTextArea selectedSeq;
 	// Liste, um Buttons alle auf einmal zu disablen
+	
 	private ArrayList<JButton> bl;
-	private JButton parse, save;
+	private JButton bParse, bSave, bBrowser;
+	
+	private BrowserWindow bw;
 
 	public FastaView(String title, int hoehe) {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize((int) (hoehe * 0.7), hoehe);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
 		setLayout(new BorderLayout());
@@ -76,15 +80,23 @@ public class FastaView extends JFrame {
 		
 		// ----- Control-Buttons ----------------------------------------------
 		JPanel south = new JPanel();
-		parse = new JButton("FASTA einlesen");
-		parse.setAlignmentX(CENTER_ALIGNMENT);
-		bl.add(parse);
-		save = new JButton("Sequenz-Liste speichern");
-		save.setAlignmentX(CENTER_ALIGNMENT);
-		bl.add(save);
+		
+		bParse = new JButton("FASTA einlesen");
+		bParse.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(bParse);
+		
+		bSave = new JButton("Sequenz-Liste speichern");
+		bSave.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(bSave);
+		
+		bBrowser = new JButton("Browser öffnen");
+		bBrowser.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(bBrowser);
+		
 		south.setLayout(new BoxLayout(south, BoxLayout.PAGE_AXIS));
-		south.add(parse);
-		south.add(save);
+		south.add(bParse);
+		south.add(bSave);
+		south.add(bBrowser);
 		south.setBackground(Color.black);
 		add(south, BorderLayout.SOUTH);
 
@@ -104,7 +116,7 @@ public class FastaView extends JFrame {
 		// TODO als Model View Presenter umschreiben, dh auch der Aufruf des 
 		// FileChoosers ist Sache des Presenters (Controller), View benachrichtigt
 		// nur
-		parse.addActionListener(event -> {
+		bParse.addActionListener(event -> {
 			
 			int returnVal = fileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -114,12 +126,16 @@ public class FastaView extends JFrame {
 			
 		});
 		
-		save.addActionListener(event -> {
+		bSave.addActionListener(event -> {
 			int returnVal = fileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
 	            fc.pressedSaveButton(file);
 			}
+		});
+		
+		bBrowser.addActionListener(event -> {
+			fc.pressedBrowserButton();
 		});
 
 	}
@@ -147,6 +163,12 @@ public class FastaView extends JFrame {
 		}
 	}
 	
+	public void openBrowser() {
+		
+		bw = BrowserWindow.getInstance("Browser", BROWSER_SIZE);
+		bw.setVisible(true);
+	}
+	
 }
 
 // Wir extenden den Default Renderer, um zb blaue Highlights zu haben
@@ -164,5 +186,29 @@ class SequenceRenderer extends DefaultListCellRenderer {
 		setText(seq.getHeader());
 
 		return this;
+	}
+}
+
+class BrowserWindow extends JFrame {
+	
+	private static BrowserWindow bw;
+	
+	public BrowserWindow (String title, int hoehe) {
+		super(title);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setSize((int) (hoehe * 0.7), hoehe);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
+		setLayout(new BorderLayout());
+	}
+	
+	// Singleton-Pattern: Nicht mehr als 1 Browser offen
+	public static BrowserWindow getInstance(String title, int hoehe) {
+		
+		if (bw == null) {
+			bw = new BrowserWindow(title, hoehe);
+			return bw;
+		}
+		return bw;		
 	}
 }
