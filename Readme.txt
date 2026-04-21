@@ -33,3 +33,4 @@ To do:
 Fragen für Feedback:
 -Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...
 -Hab mir jetzt gedacht, Error Handling betreibt der Controller, damit ich sie notfalls anzeigen kann, deswegen throws im Model
+-Tipps für die Browser-Aufgabe? Wie soll ein externer Browser wieder aus dem Programm heraus geschlossen werden und warum
