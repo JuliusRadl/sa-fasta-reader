@@ -52,7 +52,7 @@ public class FastaView extends JFrame {
 	
 	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
-	private JButton bParse, bSave, bBrowser;
+	private JButton bParse, bSave, bBrowser, bBlast;
 	
 	private BrowserWindow bw;
 
@@ -120,10 +120,15 @@ public class FastaView extends JFrame {
 		bBrowser.setAlignmentX(CENTER_ALIGNMENT);
 		bl.add(bBrowser);
 		
+		bBlast = new JButton("Blasten");
+		bBlast.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(bBlast);
+		
 		// Zum Panel hinzufügen
 		buttonPanel.add(bParse);
 		buttonPanel.add(bSave);
 		buttonPanel.add(bBrowser);
+		buttonPanel.add(bBlast);
 		
 		// Positionieren
 		c = new GridBagConstraints();
@@ -198,6 +203,14 @@ public class FastaView extends JFrame {
 		
 		bBrowser.addActionListener(event -> {
 			fc.pressedBrowserButton();
+		});
+		
+		bBlast.addActionListener(event -> {
+			int returnVal = fileChooser.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fileChooser.getSelectedFile();
+	            fc.pressedBlastButton(file);
+			}
 		});
 
 	}

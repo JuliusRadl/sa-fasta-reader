@@ -26,15 +26,10 @@ View weiß auch nichts von Model
 - Duplicate Checking mit Hashmaps?
 - Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
 - Fehler-Anzeige mit SwingWorkern handeln...
-- "In Progress" Anzeige beim Einlesen und Abspeichern
 - Confirm-Fenster für Einlesen und Abspeichern anzeigen
 - Confirmation/completion popups fürs lesen und speichern
 
 # To do A2:
-- Browser-Prozess in separatem Fenster laufen lassen DONE
-- Close-Button für Fenster, der auch Browser beendet
-- Swing Integrate Desktop Class -> Default Programme (zb Browser) aufrufen
-- Blast runterladen (inkl. makeblastdb)
 - .fasta in eigenen temp-folder kopieren und mit makeblastdb in db umwandeln
 - dann neue db mit beliebiger .fasta mit blastn durchsuchen
 - Blast Output in eigenem Fenster
