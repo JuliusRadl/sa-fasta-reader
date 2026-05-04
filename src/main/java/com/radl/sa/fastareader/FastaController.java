@@ -83,7 +83,7 @@ public class FastaController implements FastaControllable {
 	}
 	
 	public void pressedBrowserButton() {
-		fv.openBrowser();
+		//fv.openBrowser();
 
 		// Flexibel
 		if (!Desktop.isDesktopSupported()) { return; }

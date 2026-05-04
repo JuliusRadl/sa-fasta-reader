@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
@@ -50,7 +53,7 @@ public class FastaView extends JFrame {
 		setSize((int) (hoehe * 0.7), hoehe);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
-		setLayout(new BorderLayout());
+		setLayout(new GridBagLayout());
 		
 		// ------ Initialisierung ----------------------------------------------
 		seqList = new DefaultListModel<>();
@@ -58,28 +61,39 @@ public class FastaView extends JFrame {
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
 		bl = new ArrayList<JButton>();
-
-		JPanel north = new JPanel();
+		
+		// ------ Listenlabel --------------------------------------------------
+		JPanel labelPanel= new JPanel();
 		seqListLabel = new JLabel("Liste der Sequenzobjekte");
-		north.add(seqListLabel);
-		add(north, BorderLayout.NORTH);
+		labelPanel.add(seqListLabel);
+		
+		// Positionieren
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		add(labelPanel, c);
 
 		// ------ Liste & ausgewählte Sequenz ---------------------------------
-		JPanel center = new JPanel(new BorderLayout());
+		JPanel listPanel= new JPanel();
 		
 		seqListList = new JList<Sequence>(seqList);
 		seqListList.setCellRenderer(new SequenceRenderer());
-		center.add(new JScrollPane(seqListList), BorderLayout.NORTH);
+		listPanel.add(new JScrollPane(seqListList), BorderLayout.NORTH);
 		
 		selectedSeq = new JTextArea();
 		selectedSeq.setLineWrap(true);
-		center.add(new JScrollPane(selectedSeq), BorderLayout.CENTER);
+		listPanel.add(new JScrollPane(selectedSeq), BorderLayout.CENTER);
 		
-		center.setBackground(Color.red);
-		add(center, BorderLayout.CENTER);
+		//Positionieren
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.VERTICAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		add(listPanel, c);
 		
-		// ----- Control-Buttons ----------------------------------------------
-		JPanel south = new JPanel();
+		// ----- Control-Buttons -----------------------------------------------
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridLayout(0, 2));
 		
 		bParse = new JButton("FASTA einlesen");
 		bParse.setAlignmentX(CENTER_ALIGNMENT);
@@ -93,13 +107,18 @@ public class FastaView extends JFrame {
 		bBrowser.setAlignmentX(CENTER_ALIGNMENT);
 		bl.add(bBrowser);
 		
-		south.setLayout(new BoxLayout(south, BoxLayout.PAGE_AXIS));
-		south.add(bParse);
-		south.add(bSave);
-		south.add(bBrowser);
-		south.setBackground(Color.black);
-		add(south, BorderLayout.SOUTH);
+		// Zum Panel hinzufügen
+		buttonPanel.add(bParse);
+		buttonPanel.add(bSave);
+		buttonPanel.add(bBrowser);
+		
+		// Positionieren
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 2;
+		add(buttonPanel, c);
 
+		// ------ Listenlistener -----------------------------------------------
 		// TODO gehört der in den Controller?
 		seqListList.addListSelectionListener(new ListSelectionListener() {
 			@Override
