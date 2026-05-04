@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
@@ -22,14 +23,20 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class FastaView extends JFrame {
 	
 	public final int BROWSER_SIZE = 500;
+	public final int DEFAULT_INSET = 10;
+	public final String DEFAULT_STATUS = "© Julius Radl";
 
 	private DefaultListModel<Sequence> seqList;
 	private FastaController fc;
@@ -40,8 +47,10 @@ public class FastaView extends JFrame {
 	private JLabel seqListLabel;
 	private JList<Sequence> seqListList;
 	private JTextArea selectedSeq;
-	// Liste, um Buttons alle auf einmal zu disablen
+	private JProgressBar jpg;
+	private JLabel taskDesc;
 	
+	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
 	private JButton bParse, bSave, bBrowser;
 	
@@ -69,24 +78,28 @@ public class FastaView extends JFrame {
 		
 		// Positionieren
 		GridBagConstraints c = new GridBagConstraints();
+		// Komponenten mit groesserem Weight als andere werden gestreckt,
+		// andersrum gestaucht
+		c.weighty = 0;
 		c.gridx = 0;
 		c.gridy = 0;
 		add(labelPanel, c);
 
 		// ------ Liste & ausgewählte Sequenz ---------------------------------
-		JPanel listPanel= new JPanel();
+		JPanel listPanel= new JPanel(new GridLayout(0, 1));
 		
 		seqListList = new JList<Sequence>(seqList);
 		seqListList.setCellRenderer(new SequenceRenderer());
-		listPanel.add(new JScrollPane(seqListList), BorderLayout.NORTH);
+		listPanel.add(new JScrollPane(seqListList));
 		
 		selectedSeq = new JTextArea();
 		selectedSeq.setLineWrap(true);
-		listPanel.add(new JScrollPane(selectedSeq), BorderLayout.CENTER);
+		listPanel.add(new JScrollPane(selectedSeq));
 		
 		//Positionieren
 		c = new GridBagConstraints();
-		c.fill = GridBagConstraints.VERTICAL;
+		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 1;
 		c.gridx = 0;
 		c.gridy = 1;
 		add(listPanel, c);
@@ -114,9 +127,39 @@ public class FastaView extends JFrame {
 		
 		// Positionieren
 		c = new GridBagConstraints();
+		c.insets = new Insets(DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET);
+		c.weighty = 0;
 		c.gridx = 0;
 		c.gridy = 2;
 		add(buttonPanel, c);
+		
+		// ------ Status-Anzeige -----------------------------------------------
+		JPanel statusPanel = new JPanel(new BorderLayout());
+		
+		// Separator
+		JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
+		statusPanel.add(sep, BorderLayout.NORTH);
+		
+		// Progress & Status-Panel
+		JPanel progBarPanel = new JPanel();
+		jpg = new JProgressBar();
+		progBarPanel.add(jpg);
+		jpg.setIndeterminate(true);
+		jpg.setVisible(false);
+		
+		taskDesc = new JLabel(DEFAULT_STATUS);
+		progBarPanel.add(taskDesc);		
+		
+		statusPanel.add(progBarPanel, BorderLayout.WEST);
+		
+		// Positionieren
+		c = new GridBagConstraints();
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 3;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET);
+		add(statusPanel, c);
 
 		// ------ Listenlistener -----------------------------------------------
 		// TODO gehört der in den Controller?
@@ -161,6 +204,12 @@ public class FastaView extends JFrame {
 	
 	public void displayError(String error) {
 		// TODO Fehler anzeigen
+	}
+	
+	public void displayProgress(boolean enabled, String taskDesc) {
+		
+		jpg.setVisible(enabled);
+		this.taskDesc.setText(taskDesc);
 	}
 
 	public void updateSeqList(ArrayList<Sequence> seqList) {

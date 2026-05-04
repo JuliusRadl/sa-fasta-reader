@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
@@ -24,6 +25,8 @@ public class FastaController implements FastaControllable {
 		
 		// Buttons im EDT disablen
 		fv.setButtonsEnabled(false);
+		// Progress-Anzeige an
+		fv.displayProgress(true, "Parsing...");
 		// Parameter 1: Rückgabe-Wert
 		// Parameter 2: Progress-Werte
 		// Muss man beides nicht nutzen
@@ -48,6 +51,13 @@ public class FastaController implements FastaControllable {
 				
 				fv.updateSeqList(fm.getSeqList());
 				fv.setButtonsEnabled(true);
+				try {
+					fv.displayProgress(false, get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
 			}
 		};
 		sw.execute();
@@ -56,6 +66,7 @@ public class FastaController implements FastaControllable {
 	public void pressedSaveButton(File f) {
 		
 		fv.setButtonsEnabled(false);
+		fv.displayProgress(true, "Saving...");
 		
 		SwingWorker<String, Integer> sw = new SwingWorker<String, Integer>() {
 			
@@ -77,6 +88,13 @@ public class FastaController implements FastaControllable {
 				
 				fv.updateSeqList(fm.getSeqList());
 				fv.setButtonsEnabled(true);
+				try {
+					fv.displayProgress(false, get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
 			}
 		};
 		sw.execute();

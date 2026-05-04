@@ -70,6 +70,13 @@ public class FastaModel {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		FileWriter fw = new FileWriter(f);
 		gson.toJson(seqList, fw);
+		// Zur Anschaulichen Darstellung sleep, dass auch nicht geworfen wird
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// Ganz wichtig: Writer schließen, sonst wird Json nicht richtig terminiert
 		fw.close();
 	}
