@@ -39,7 +39,8 @@ public class FastaModel {
 		int extPos = f.getName().lastIndexOf(".");
 		String extension = f.getName().substring(extPos + 1);
 		Runnable producer;
-		if (extension == ".fasta") {
+		// nicht == verwenden, das testet, ob es dasselbe Objekt ist
+		if (extension.equals("fasta")) {
 			producer = new FastaParseProducer(f, oos);
 		} else {
 			producer = new BackupParseProducer(f, oos);
