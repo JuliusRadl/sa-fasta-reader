@@ -30,9 +30,8 @@ View weiß auch nichts von Model
 - Confirmation/completion popups fürs lesen und speichern
 
 # To do A2:
-- .fasta in eigenen temp-folder kopieren und mit makeblastdb in db umwandeln
-- dann neue db mit beliebiger .fasta mit blastn durchsuchen
-- Blast Output in eigenem Fenster
+- Blast-Output als Object[][]-Array parsen
+- als JTable darstellen in eigenem Fenster
 
 # Fragen für Feedback:
 - Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...

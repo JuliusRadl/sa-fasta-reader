@@ -214,19 +214,7 @@ public class FastaController implements FastaControllable {
 			}
 		};
 		
-		sw.execute();
-		
-		// dort Prozess starten um fasta zu konvertieren
-		// makeblastdb -in mgProteome.fasta -dbtype prot
-		
-		// auf Ergebnis warten
-		
-		// Prozess starten, um zu blasten
-		
-		// Prozess-Output auslesen
-		
-		// Methode aufrufen, um Output anzuzeigen
-				
+		sw.execute();				
 	}
 	
 	public void setView(FastaView fv) {
