@@ -144,7 +144,6 @@ public class FastaView extends JFrame {
 		// TODO Fehler anzeigen
 	}
 
-	// TODO besser updaten, oder passt es schon so?
 	public void updateSeqList(ArrayList<Sequence> seqList) {
 		// Objekte in DefaultListModel schieben
 		this.seqList.clear();

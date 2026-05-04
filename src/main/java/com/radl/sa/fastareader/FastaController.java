@@ -111,7 +111,7 @@ public class FastaController implements FastaControllable {
 //		try {
 //			Process p = pb.start();
 //			// kann Prozess beenden, aber der Default Browser wird sich 
-//			// dadurch nicht schließen
+//			// dadurch nicht schließen. Lösung mit WebView und JavaFx möglich
 //			p.destroy();
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
