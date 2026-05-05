@@ -1,6 +1,7 @@
 package com.radl.sa.fastareader;
 
 import java.awt.Desktop;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -183,8 +184,10 @@ public class FastaController implements FastaControllable {
 							"-evalue", "3e-18");
 					pc.directory(tmpFolder.toFile());
 					p = pc.start();
-					output = p.getInputStream().readAllBytes();
-					System.out.println(new String(output));
+					// TODO 
+					
+					// output = p.getInputStream().readAllBytes();
+					// System.out.println(new String(output));
 					p.waitFor();
 					
 					return "Fertig";
