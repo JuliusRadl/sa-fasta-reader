@@ -21,6 +21,7 @@
 - Bei MVP noch stärker: View komplett dumb, kann nur Presenter über Clicks etc. benachrichtigen, der dann alles weitere handelt,
 View weiß auch nichts von Model
 - Action Listener bleiben im View, der den Controller benachrichtigt
+- Zeilenweisen, tabellerischen CLI-Output auch zeilenweise mit BufferedReader auslesen, byteweise unnötig
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
