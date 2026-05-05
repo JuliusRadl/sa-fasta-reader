@@ -2,12 +2,16 @@ package com.radl.sa.fastareader;
 
 import java.awt.Desktop;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -146,6 +150,7 @@ public class FastaController implements FastaControllable {
 		// Swingworker
 		fv.setButtonsEnabled(false);
 		fv.displayProgress(true, "Blasting...");
+		fv.clearBlastTable();
 		
 		SwingWorker<String, Integer> sw = new SwingWorker<String, Integer>() {
 			
@@ -186,9 +191,38 @@ public class FastaController implements FastaControllable {
 					p = pc.start();
 					// TODO 
 					
-					// output = p.getInputStream().readAllBytes();
-					// System.out.println(new String(output));
+//					output = p.getInputStream().readAllBytes();
+//					for (byte b : Arrays.copyOfRange(output, 0, 500)) {
+//						System.out.print( (char) b);
+//					}
+					
+					// BufferedReader aufsetzen
+					InputStream is = p.getInputStream();
+					InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader br = new BufferedReader(isr);
+					
+					String line;
+					
+					while (true) {
+						line = br.readLine();
+						
+						// wenn nicht null und nicht leer
+						if (line != null && !line.isBlank()) {
+							String[] vals = line.split("[ \t]+");
+							fv.addBlastRow(vals);
+						}
+						
+						if (line == null) {
+							break;
+						}
+					}
+					
+					// per View-Methode an Defaulttablemodel anhängen
+					// TODO sauberer wärs, die Daten auch im Modell zu speichern
+					// und dann in done() mit ui-methode abzufragen
+					
 					p.waitFor();
+					br.close();
 					
 					return "Fertig";
 				} catch (IOException e) {
@@ -206,6 +240,7 @@ public class FastaController implements FastaControllable {
 			
 			public void done() {
 				
+				fv.openTableWindow();
 				fv.setButtonsEnabled(true);
 				try {
 					fv.displayProgress(false, get());

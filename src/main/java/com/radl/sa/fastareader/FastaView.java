@@ -26,20 +26,23 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 public class FastaView extends JFrame {
 	
-	public final int BROWSER_SIZE = 500;
+	public final int BLASTTABLE_SIZE = 700;
 	public final int DEFAULT_INSET = 10;
 	public final String DEFAULT_STATUS = "© Julius Radl";
 
-	private DefaultListModel<Sequence> seqList;
+	private DefaultListModel<Sequence> mSeqList;
 	private FastaController fc;
+	private DefaultTableModel mBlastTable;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -50,11 +53,27 @@ public class FastaView extends JFrame {
 	private JProgressBar jpg;
 	private JLabel taskDesc;
 	
+	// Blast-Tabellenheader
+	private Object[] blastHeaders = new Object[] {
+	        "Query",
+	        "Subject",
+	        "% Identity",
+	        "Alignment Length",
+	        "Mismatches",
+	        "Gap Opens",
+	        "Q Start",
+	        "Q End",
+	        "S Start",
+	        "S End",
+	        "E-Value",
+	        "Bit Score"
+	};
+	
 	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
 	private JButton bParse, bSave, bBrowser, bBlast;
 	
-	private BrowserWindow bw;
+	private TableWindow bw;
 
 	public FastaView(String title, int hoehe) {
 		super(title);
@@ -65,7 +84,8 @@ public class FastaView extends JFrame {
 		setLayout(new GridBagLayout());
 		
 		// ------ Initialisierung ----------------------------------------------
-		seqList = new DefaultListModel<>();
+		mSeqList = new DefaultListModel<>();
+		mBlastTable = new DefaultTableModel(blastHeaders, 0);
 		fileChooser = new JFileChooser();
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
@@ -88,7 +108,7 @@ public class FastaView extends JFrame {
 		// ------ Liste & ausgewählte Sequenz ---------------------------------
 		JPanel listPanel= new JPanel(new GridLayout(0, 1));
 		
-		seqListList = new JList<Sequence>(seqList);
+		seqListList = new JList<Sequence>(mSeqList);
 		seqListList.setCellRenderer(new SequenceRenderer());
 		listPanel.add(new JScrollPane(seqListList));
 		
@@ -165,7 +185,7 @@ public class FastaView extends JFrame {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets = new Insets(DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET, DEFAULT_INSET);
 		add(statusPanel, c);
-
+		
 		// ------ Listenlistener -----------------------------------------------
 		// TODO gehört der in den Controller?
 		seqListList.addListSelectionListener(new ListSelectionListener() {
@@ -224,12 +244,18 @@ public class FastaView extends JFrame {
 		jpg.setVisible(enabled);
 		this.taskDesc.setText(taskDesc);
 	}
+	
+	public void addBlastRow(Object[] values) {
+		
+		System.out.println("test");
+		mBlastTable.addRow(values);
+	}
 
 	public void updateSeqList(ArrayList<Sequence> seqList) {
 		// Objekte in DefaultListModel schieben
-		this.seqList.clear();
+		this.mSeqList.clear();
 		for (Sequence seq : seqList) {
-			this.seqList.addElement(seq);
+			this.mSeqList.addElement(seq);
 		}
 	}
 	
@@ -243,10 +269,20 @@ public class FastaView extends JFrame {
 		}
 	}
 	
-	public void openBrowser() {
+	public void openTableWindow() {
 		
-		bw = BrowserWindow.getInstance("Browser", BROWSER_SIZE);
+		bw = TableWindow.getInstance("Blast-Output", BLASTTABLE_SIZE, this);
 		bw.setVisible(true);
+	}
+	
+	public void clearBlastTable() {
+		
+		mBlastTable.setRowCount(0);
+	}
+	
+	public DefaultTableModel getBlastTable() {
+		
+		return mBlastTable;
 	}
 	
 }
@@ -269,26 +305,34 @@ class SequenceRenderer extends DefaultListCellRenderer {
 	}
 }
 
-class BrowserWindow extends JFrame {
+class TableWindow extends JFrame {
 	
-	private static BrowserWindow bw;
+	private static TableWindow tw;
+	private FastaView fv;
 	
-	public BrowserWindow (String title, int hoehe) {
+	public TableWindow (String title, int hoehe, FastaView fv) {
 		super(title);
+		this.fv = fv;
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setSize((int) (hoehe * 0.7), hoehe);
+		setSize((int) (hoehe * 1.5), hoehe);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
 		setLayout(new BorderLayout());
+		
+		// ----- Blast-Tabelle ------------------------------------------------- 
+		JTable blastTable = new JTable(fv.getBlastTable());
+		JScrollPane tableScrollPane = new JScrollPane(blastTable);
+		blastTable.setFillsViewportHeight(true);
+		add(tableScrollPane, BorderLayout.CENTER);
 	}
 	
 	// Singleton-Pattern: Nicht mehr als 1 Browser offen
-	public static BrowserWindow getInstance(String title, int hoehe) {
+	public static TableWindow getInstance(String title, int hoehe, FastaView fv) {
 		
-		if (bw == null) {
-			bw = new BrowserWindow(title, hoehe);
-			return bw;
+		if (tw == null) {
+			tw = new TableWindow(title, hoehe, fv);
+			return tw;
 		}
-		return bw;		
+		return tw;		
 	}
 }
