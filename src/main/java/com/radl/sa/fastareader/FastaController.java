@@ -1,12 +1,16 @@
 package com.radl.sa.fastareader;
 
 import java.awt.Desktop;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import javax.swing.SwingWorker;
 
@@ -135,6 +139,85 @@ public class FastaController implements FastaControllable {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+	}
+	
+	public void pressedBlastButton(File f) {
+		
+		// Swingworker
+		fv.setButtonsEnabled(false);
+		fv.displayProgress(true, "Blasting...");
+		
+		SwingWorker<String, Integer> sw = new SwingWorker<String, Integer>() {
+			
+			private byte[] output;
+			
+			public String doInBackground() {
+				
+				try {
+					// tmp-Folder erzeugen
+					Path tmpFolder = Files.createTempDirectory("tmp");
+					System.out.println(tmpFolder.toString());
+					Path tmpFile = tmpFolder.resolve(f.getName());
+					System.out.println(tmpFile.toString());
+					// File dorthin kopieren
+					Files.copy(f.toPath(), tmpFile);
+					
+					// Datenbank erzeugen
+					ProcessBuilder pc = new ProcessBuilder(
+							"makeblastdb",
+							"-in", tmpFile.toString(),
+							"-dbtype", "prot");
+					// wd anpassen
+					pc.directory(tmpFolder.toFile());
+					Process p = pc.start();
+					output = p.getInputStream().readAllBytes();
+					System.out.println(new String(output));
+					System.out.println(p.waitFor());
+					
+					
+					// Blasten
+					pc = new ProcessBuilder(
+							"blastp",
+							"-query", tmpFile.toString(),
+							"-db", tmpFile.toString(),
+							"-outfmt", "6",
+							"-evalue", "3e-18");
+					pc.directory(tmpFolder.toFile());
+					p = pc.start();
+					// TODO 
+					
+					// output = p.getInputStream().readAllBytes();
+					// System.out.println(new String(output));
+					p.waitFor();
+					
+					return "Fertig";
+				} catch (IOException e) {
+					String msg = "Fehler beim Erzeugen des Temp-Ordners";
+					System.err.println(msg);
+					e.printStackTrace();
+					return msg;
+				} catch (InterruptedException e) {
+					String msg = "Prozess wurde unterbrochen";
+					System.err.println(msg);
+					e.printStackTrace();
+					return msg;
+				}
+			}
+			
+			public void done() {
+				
+				fv.setButtonsEnabled(true);
+				try {
+					fv.displayProgress(false, get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		sw.execute();				
 	}
 	
 	public void setView(FastaView fv) {
