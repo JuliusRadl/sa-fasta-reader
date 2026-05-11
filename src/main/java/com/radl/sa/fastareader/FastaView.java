@@ -74,6 +74,7 @@ public class FastaView extends JFrame {
 	private JButton bParse, bSave, bBrowser, bBlast;
 	
 	private TableWindow bw;
+	private ConfirmationPopup cp;
 
 	public FastaView(String title, int hoehe) {
 		super(title);
@@ -285,6 +286,9 @@ public class FastaView extends JFrame {
 		return mBlastTable;
 	}
 	
+	public void createConfirmationPopup() {
+		
+	}
 }
 
 // Wir extenden den Default Renderer, um zb blaue Highlights zu haben
@@ -308,11 +312,9 @@ class SequenceRenderer extends DefaultListCellRenderer {
 class TableWindow extends JFrame {
 	
 	private static TableWindow tw;
-	private FastaView fv;
 	
 	public TableWindow (String title, int hoehe, FastaView fv) {
 		super(title);
-		this.fv = fv;
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setSize((int) (hoehe * 1.5), hoehe);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
@@ -334,5 +336,34 @@ class TableWindow extends JFrame {
 			return tw;
 		}
 		return tw;		
+	}
+}
+
+class ConfirmationPopup extends JFrame {
+	
+	private FastaView fv;
+	private JButton bConfirm;
+	private FastaController fc;
+	
+	public ConfirmationPopup(String title, int hoehe, String notification) {
+		super(title);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setSize((int) (hoehe * 1.5), hoehe);
+//		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+//		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
+		setLayout(new BorderLayout());
+		
+		bConfirm = new JButton("Ok");
+		add(bConfirm, BorderLayout.CENTER);
+		
+		bConfirm.addActionListener( event -> {
+			
+			fc.pressedConfirmButton();
+		});
+	}
+	
+	public void close() {
+		
+		this.dispose();
 	}
 }
