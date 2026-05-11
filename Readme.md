@@ -31,8 +31,7 @@ View weiß auch nichts von Model
 - Confirmation/completion popups fürs lesen und speichern
 
 # To do A2:
-- Blast-Output als Object[][]-Array parsen
-- als JTable darstellen in eigenem Fenster
+- Spalten Datentypen zuweisen & sortierbar machen
 
 # Fragen für Feedback:
 - Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...

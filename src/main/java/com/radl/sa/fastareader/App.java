@@ -6,16 +6,20 @@ public class App {
 
 	public static void main(String[] args) throws Exception {
 		
-		FastaModel fm = new FastaModel();
+//		FastaModel fm = new FastaModel();
+//		
+//		FlatLightLaf.setup();
+//		FastaView fv = new FastaView("FASTA-Manager", 500);
+//		fv.setVisible(true);
+//		
+//		FastaController fc = new FastaController(fm, fv);
+//		// TODO soll der View wirklich was vom Controller wissen?
+//		fv.setController(fc);
 		
-		FlatLightLaf.setup();
-		FastaView fv = new FastaView("FASTA-Manager", 500);
-		fv.setVisible(true);
+		Exercises.doA3_1();
+		Exercises.doA3_2();
 		
-		FastaController fc = new FastaController(fm, fv);
-		// TODO soll der View wirklich was vom Controller wissen?
-		fv.setController(fc);
-		
+//		Experiments.doExperimentInetAdress();
 //		Experiments.doExperiment1();
 //		Experiments.doExperiment2();
 //		Experiments.doExperiment3();

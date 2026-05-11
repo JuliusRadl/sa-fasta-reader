@@ -326,7 +326,7 @@ class TableWindow extends JFrame {
 		add(tableScrollPane, BorderLayout.CENTER);
 	}
 	
-	// Singleton-Pattern: Nicht mehr als 1 Browser offen
+	// Singleton-Pattern: Nicht mehr als 1 Tabelle offen
 	public static TableWindow getInstance(String title, int hoehe, FastaView fv) {
 		
 		if (tw == null) {
