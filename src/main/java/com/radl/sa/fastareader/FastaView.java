@@ -36,13 +36,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class FastaView extends JFrame {
 	
-	public final int BLASTTABLE_SIZE = 700;
 	public final int DEFAULT_INSET = 10;
 	public final String DEFAULT_STATUS = "© Julius Radl";
 
 	private DefaultListModel<Sequence> mSeqList;
 	private FastaController fc;
-	private DefaultTableModel mBlastTable;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -53,28 +51,9 @@ public class FastaView extends JFrame {
 	private JProgressBar jpg;
 	private JLabel taskDesc;
 	
-	// Blast-Tabellenheader
-	private Object[] blastHeaders = new Object[] {
-	        "Query",
-	        "Subject",
-	        "% Identity",
-	        "Alignment Length",
-	        "Mismatches",
-	        "Gap Opens",
-	        "Q Start",
-	        "Q End",
-	        "S Start",
-	        "S End",
-	        "E-Value",
-	        "Bit Score"
-	};
-	
 	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
 	private JButton bParse, bSave, bBrowser, bBlast;
-	
-	private TableWindow bw;
-	private ConfirmationPopup cp;
 
 	public FastaView(String title, int hoehe) {
 		super(title);
@@ -86,7 +65,6 @@ public class FastaView extends JFrame {
 		
 		// ------ Initialisierung ----------------------------------------------
 		mSeqList = new DefaultListModel<>();
-		mBlastTable = new DefaultTableModel(blastHeaders, 0);
 		fileChooser = new JFileChooser();
 		File cd = new File(System.getProperty("user.dir"));
 		fileChooser.setCurrentDirectory(cd);
@@ -233,23 +211,12 @@ public class FastaView extends JFrame {
 	            fc.pressedBlastButton(file);
 			}
 		});
-
-	}
-	
-	public void displayError(String error) {
-		// TODO Fehler anzeigen
 	}
 	
 	public void displayProgress(boolean enabled, String taskDesc) {
 		
 		jpg.setVisible(enabled);
 		this.taskDesc.setText(taskDesc);
-	}
-	
-	public void addBlastRow(Object[] values) {
-		
-		System.out.println("test");
-		mBlastTable.addRow(values);
 	}
 
 	public void updateSeqList(ArrayList<Sequence> seqList) {
@@ -269,26 +236,6 @@ public class FastaView extends JFrame {
 			b.setEnabled(enabled);
 		}
 	}
-	
-	public void openTableWindow() {
-		
-		bw = TableWindow.getInstance("Blast-Output", BLASTTABLE_SIZE, this);
-		bw.setVisible(true);
-	}
-	
-	public void clearBlastTable() {
-		
-		mBlastTable.setRowCount(0);
-	}
-	
-	public DefaultTableModel getBlastTable() {
-		
-		return mBlastTable;
-	}
-	
-	public void createConfirmationPopup() {
-		
-	}
 }
 
 // Wir extenden den Default Renderer, um zb blaue Highlights zu haben
@@ -306,64 +253,5 @@ class SequenceRenderer extends DefaultListCellRenderer {
 		setText(seq.getHeader());
 
 		return this;
-	}
-}
-
-class TableWindow extends JFrame {
-	
-	private static TableWindow tw;
-	
-	public TableWindow (String title, int hoehe, FastaView fv) {
-		super(title);
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setSize((int) (hoehe * 1.5), hoehe);
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
-		setLayout(new BorderLayout());
-		
-		// ----- Blast-Tabelle ------------------------------------------------- 
-		JTable blastTable = new JTable(fv.getBlastTable());
-		JScrollPane tableScrollPane = new JScrollPane(blastTable);
-		blastTable.setFillsViewportHeight(true);
-		add(tableScrollPane, BorderLayout.CENTER);
-	}
-	
-	// Singleton-Pattern: Nicht mehr als 1 Tabelle offen
-	public static TableWindow getInstance(String title, int hoehe, FastaView fv) {
-		
-		if (tw == null) {
-			tw = new TableWindow(title, hoehe, fv);
-			return tw;
-		}
-		return tw;		
-	}
-}
-
-class ConfirmationPopup extends JFrame {
-	
-	private FastaView fv;
-	private JButton bConfirm;
-	private FastaController fc;
-	
-	public ConfirmationPopup(String title, int hoehe, String notification) {
-		super(title);
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setSize((int) (hoehe * 1.5), hoehe);
-//		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-//		setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
-		setLayout(new BorderLayout());
-		
-		bConfirm = new JButton("Ok");
-		add(bConfirm, BorderLayout.CENTER);
-		
-		bConfirm.addActionListener( event -> {
-			
-			fc.pressedConfirmButton();
-		});
-	}
-	
-	public void close() {
-		
-		this.dispose();
-	}
+	}	
 }

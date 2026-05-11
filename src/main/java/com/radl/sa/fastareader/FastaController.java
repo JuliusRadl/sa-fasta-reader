@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -44,6 +45,16 @@ public class FastaController implements FastaControllable {
 				
 				try {
 					fm.parseFasta(f);
+					
+					// Bestätigungspopup
+					ConfirmationPopupView cpv = new ConfirmationPopupView(
+							"Parsing von " + f.getAbsolutePath() + " abgeschlossen.");
+					cpv.setVisible(true);
+					
+					// Popup-Controller
+					ConfirmationPopupController cpp = new ConfirmationPopupController(cpv);
+					cpv.setController(cpp);
+					
 					return "Fertig";
 				} catch (IOException e) {
 					String msg = "Fehler beim Einlesen";
@@ -82,6 +93,16 @@ public class FastaController implements FastaControllable {
 				
 				try {
 					fm.saveSeqList(f);
+					
+					// Bestätigungspopup
+					ConfirmationPopupView cpv = new ConfirmationPopupView(
+							"Speichern unter " + f.getAbsolutePath() + " abgeschlossen.");
+					cpv.setVisible(true);
+					
+					// Popup-Controller
+					ConfirmationPopupController cpp = new ConfirmationPopupController(cpv);
+					cpv.setController(cpp);
+					
 					return "Erfolgreich abgespeichert";
 				} catch (IOException e) {
 					String msg = "Fehler beim Speichern";
@@ -145,84 +166,30 @@ public class FastaController implements FastaControllable {
 //		}
 	}
 	
+	// Berechnungen, die vom FastaView gefordert wurden,
+	// bleiben auch im FastaController und gehen nicht in
+	// den BlastTableController
 	public void pressedBlastButton(File f) {
 		
 		// Swingworker
 		fv.setButtonsEnabled(false);
 		fv.displayProgress(true, "Blasting...");
-		fv.clearBlastTable();
 		
 		SwingWorker<String, Integer> sw = new SwingWorker<String, Integer>() {
-			
-			private byte[] output;
 			
 			public String doInBackground() {
 				
 				try {
-					// tmp-Folder erzeugen
-					Path tmpFolder = Files.createTempDirectory("tmp");
-					System.out.println(tmpFolder.toString());
-					Path tmpFile = tmpFolder.resolve(f.getName());
-					System.out.println(tmpFile.toString());
-					// File dorthin kopieren
-					Files.copy(f.toPath(), tmpFile);
+					ArrayList<String[]> ls = BlastService.service(f);
+
+					// Blast-Tabelle erzeugen und Daten übergeben
+					BlastTableView btv = BlastTableView.getInstance();
+					btv.setBlastTable(ls);
+					btv.setVisible(true);
 					
-					// Datenbank erzeugen
-					ProcessBuilder pc = new ProcessBuilder(
-							"makeblastdb",
-							"-in", tmpFile.toString(),
-							"-dbtype", "prot");
-					// wd anpassen
-					pc.directory(tmpFolder.toFile());
-					Process p = pc.start();
-					output = p.getInputStream().readAllBytes();
-					System.out.println(new String(output));
-					System.out.println(p.waitFor());
-					
-					
-					// Blasten
-					pc = new ProcessBuilder(
-							"blastp",
-							"-query", tmpFile.toString(),
-							"-db", tmpFile.toString(),
-							"-outfmt", "6",
-							"-evalue", "3e-18");
-					pc.directory(tmpFolder.toFile());
-					p = pc.start();
-					// TODO 
-					
-//					output = p.getInputStream().readAllBytes();
-//					for (byte b : Arrays.copyOfRange(output, 0, 500)) {
-//						System.out.print( (char) b);
-//					}
-					
-					// BufferedReader aufsetzen
-					InputStream is = p.getInputStream();
-					InputStreamReader isr = new InputStreamReader(is);
-					BufferedReader br = new BufferedReader(isr);
-					
-					String line;
-					
-					while (true) {
-						line = br.readLine();
-						
-						// wenn nicht null und nicht leer
-						if (line != null && !line.isBlank()) {
-							String[] vals = line.split("[ \t]+");
-							fv.addBlastRow(vals);
-						}
-						
-						if (line == null) {
-							break;
-						}
-					}
-					
-					// per View-Methode an Defaulttablemodel anhängen
-					// TODO sauberer wärs, die Daten auch im Modell zu speichern
-					// und dann in done() mit ui-methode abzufragen
-					
-					p.waitFor();
-					br.close();
+					// neuen Controller
+					BlastTableController btc = new BlastTableController(btv);
+					btv.setController(btc);
 					
 					return "Fertig";
 				} catch (IOException e) {
@@ -240,10 +207,9 @@ public class FastaController implements FastaControllable {
 			
 			public void done() {
 				
-				fv.openTableWindow();
-				fv.setButtonsEnabled(true);
+				fv.setButtonsEnabled(true);				
 				try {
-					fv.displayProgress(false, get());
+					fv.displayProgress(false, get());				
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
