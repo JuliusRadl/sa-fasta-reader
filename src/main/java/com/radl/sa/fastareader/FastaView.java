@@ -34,6 +34,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import com.radl.sa.services.Sequence;
+
 public class FastaView extends JFrame {
 	
 	public final int DEFAULT_INSET = 10;

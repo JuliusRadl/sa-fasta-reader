@@ -19,6 +19,9 @@ import java.util.stream.Stream;
 
 import javax.swing.SwingWorker;
 
+import com.radl.sa.interfaces.FastaControllable;
+import com.radl.sa.services.BlastService;
+
 public class FastaController implements FastaControllable {
 
 	private FastaModel fm;

@@ -1,4 +1,4 @@
-package com.radl.sa.fastareader;
+package com.radl.sa.exercises;
 
 import java.awt.Point;
 import java.net.InetAddress;
@@ -36,6 +36,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.radl.sa.services.*;
 
 public class Experiments {
 	

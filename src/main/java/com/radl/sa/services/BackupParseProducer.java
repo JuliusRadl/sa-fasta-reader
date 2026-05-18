@@ -1,4 +1,4 @@
-package com.radl.sa.fastareader;
+package com.radl.sa.services;
 
 import java.io.File;
 import java.io.FileReader;

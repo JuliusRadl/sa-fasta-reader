@@ -27,16 +27,14 @@ View weiß auch nichts von Model
 - Duplicate Checking mit Hashmaps?
 - Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
 - Fehler-Anzeige mit SwingWorkern handeln...
-- Confirm-Fenster für Einlesen und Abspeichern anzeigen
-- Confirmation/completion popups fürs lesen und speichern
 
 # To do A2:
 - Spalten Datentypen zuweisen & sortierbar machen
 
 # To do A3:
--
+- Sequence.java, Worker etc. in eigenes Package
+- Server in eigenes Package
 
 # Fragen für Feedback:
-- Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...
-- Hab mir jetzt gedacht, Error Handling betreibt der Controller, damit ich sie notfalls anzeigen kann, deswegen throws im Model
-- Tipps für die Browser-Aufgabe? Wie soll ein externer Browser wieder aus dem Programm heraus geschlossen werden und warum
+- Server in neues Package? Wie mach ich dann Sachen wie Sequence.java zugänglich etc? Auch in eigenes Package?
+- Gleich Views etc. auch in eigenes Package

@@ -1,4 +1,4 @@
-package com.radl.sa.fastareader;
+package com.radl.sa.interfaces;
 
 import java.io.File;
 

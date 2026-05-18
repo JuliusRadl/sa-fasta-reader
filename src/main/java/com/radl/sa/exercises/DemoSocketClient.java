@@ -71,7 +71,7 @@ public class DemoSocketClient {
 
 			// 5.) Liste Arbeitsverzeichnis auf Server -> erfordert Aenderung im Server
 			System.out.println("Arbeitsverzeichnis auflisten, bitte! :-)");
-			response = br.readAllAsString();
+			response = br.read;
 			System.out.println(response);
 			
 			// 6.) Verwende den Statistik-Kalkulator (siehe tools) remote, d.h. Vektor erzuegen, an den Server 
