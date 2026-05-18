@@ -33,6 +33,9 @@ View weiß auch nichts von Model
 # To do A2:
 - Spalten Datentypen zuweisen & sortierbar machen
 
+# To do A3:
+-
+
 # Fragen für Feedback:
 - Was genau ist der Vorteil von MVC gegenüber MVP? Hab gelesen, dass man viele Controller und Views haben kann, aber nur einen Presenter...
 - Hab mir jetzt gedacht, Error Handling betreibt der Controller, damit ich sie notfalls anzeigen kann, deswegen throws im Model

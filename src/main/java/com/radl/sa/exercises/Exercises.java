@@ -1,4 +1,4 @@
-package com.radl.sa.fastareader;
+package com.radl.sa.exercises;
 
 import java.io.*;
 import java.net.*;
@@ -38,5 +38,44 @@ public class Exercises {
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void doA3_3() {
+		
+		// declare port
+		int timePort = 13;
+		
+		// declare host (internet time server from https://tf.nist.gov/tf-cgi/servers.cgi)
+		String timeHost = "time-a-g.nist.gov";
+		
+		// create client socket
+		try {
+			Socket clientSocket = new Socket(timeHost, timePort);			
+			// setup input stream
+			InputStream is = clientSocket.getInputStream();
+			
+			// read bytes
+			byte[] response = is.readAllBytes();
+			
+			// convert to string
+			String time = new String(response);
+			
+			// print to screen
+			System.out.println(time);
+			
+			// close socket
+			clientSocket.close();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void doA3_4() {
+		
+		
 	}
 }

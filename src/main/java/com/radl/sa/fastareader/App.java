@@ -16,8 +16,6 @@ public class App {
 		// TODO soll der View wirklich was vom Controller wissen?
 		fv.setController(fc);
 		
-//		Exercises.doA3_1();
-//		Exercises.doA3_2();
 		
 //		Experiments.doExperimentInetAdress();
 //		Experiments.doExperiment1();
