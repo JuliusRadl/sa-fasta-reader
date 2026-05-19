@@ -34,15 +34,17 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import com.radl.sa.interfaces.FastaControllable;
+import com.radl.sa.interfaces.FastaViewable;
 import com.radl.sa.services.Sequence;
 
-public class FastaView extends JFrame {
+public class FastaView extends JFrame implements FastaViewable {
 	
 	public final int DEFAULT_INSET = 10;
 	public final String DEFAULT_STATUS = "© Julius Radl";
 
 	private DefaultListModel<Sequence> mSeqList;
-	private FastaController fc;
+	private FastaControllable fc;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -181,17 +183,8 @@ public class FastaView extends JFrame {
 		});
 		
 		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
-		// TODO als Model View Presenter umschreiben, dh auch der Aufruf des 
-		// FileChoosers ist Sache des Presenters (Controller), View benachrichtigt
-		// nur
 		bParse.addActionListener(event -> {
-			
-			int returnVal = fileChooser.showOpenDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            File file = fileChooser.getSelectedFile();
-	            fc.pressedParseButton(file);
-			}
-			
+			fc.pressedParseButton();			
 		});
 		
 		bSave.addActionListener(event -> {
@@ -229,13 +222,26 @@ public class FastaView extends JFrame {
 		}
 	}
 	
-	public void setController(FastaController fc) {
+	public void setController(FastaControllable fc) {
 		this.fc = fc;
 	}
 	
 	public void setButtonsEnabled(boolean enabled) {
 		for (JButton b : bl) {
 			b.setEnabled(enabled);
+		}
+	}
+	
+	// Ist Model View Presenter, dh auch der Aufruf des FileChoosers ist Sache
+	// des Presenters (Controller), View benachrichtigt nur	
+	public File openFileDialogue() {
+		
+		int status = fileChooser.showOpenDialog(this);
+		if (status == JFileChooser.APPROVE_OPTION) {
+			return fileChooser.getSelectedFile();
+		} else {
+			// TODO könnte man auch per Exception behandeln
+			return null;
 		}
 	}
 }

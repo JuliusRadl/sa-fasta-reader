@@ -7,11 +7,15 @@ import com.radl.sa.fastareader.FastaView;
 
 public interface FastaControllable {
 
-	public void pressedParseButton(File f);
+	public void pressedParseButton();
 	
 	public void pressedSaveButton(File f);
 	
-	public void setModel(FastaModel fm);
+	public void setModel(FastaModellable fm);
 	
-	public void setView(FastaView fv);
+	public void setView(FastaViewable fv);
+
+	public void pressedBlastButton(File file);
+
+	public void pressedBrowserButton();
 }

@@ -14,12 +14,13 @@ import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.radl.sa.interfaces.FastaModellable;
 import com.radl.sa.services.BackupParseProducer;
 import com.radl.sa.services.FastaParseConsumer;
 import com.radl.sa.services.FastaParseProducer;
 import com.radl.sa.services.Sequence;
 
-public class FastaModel {
+public class FastaModel implements FastaModellable {
 
 	private final ArrayList<Sequence> seqList;
 	private final ExecutorService ex;

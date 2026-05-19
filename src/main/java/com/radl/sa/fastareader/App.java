@@ -1,6 +1,7 @@
 package com.radl.sa.fastareader;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.radl.sa.fastareader.*;
 
 public class App {
 
@@ -12,7 +13,7 @@ public class App {
 		FastaView fv = new FastaView("FASTA-Manager", 500);
 		fv.setVisible(true);
 		
-		FastaController fc = new FastaController(fm, fv);
+		FastaOnlineController fc = new FastaOnlineController(fm, fv);
 		// TODO soll der View wirklich was vom Controller wissen?
 		fv.setController(fc);
 		

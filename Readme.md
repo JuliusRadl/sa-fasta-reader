@@ -12,6 +12,8 @@
 - Interface vor allem für Controller nützlich, wenn man später GUI weglassen und Logik automatisieren will (zb auch bei Tests)
 - Funktionen zum Datenfluss im Model sind ok, aber Business Logik gehört eigentlich in Controller
 - Interfaces nach Konvention mit I im Namen beginnen
+- Exceptions im Interface definieren ist super!
+- 
 
 # Sonstiges:
 - Repository auf Github laden
@@ -22,6 +24,7 @@
 View weiß auch nichts von Model
 - Action Listener bleiben im View, der den Controller benachrichtigt
 - Zeilenweisen, tabellerischen CLI-Output auch zeilenweise mit BufferedReader auslesen, byteweise unnötig
+- Packages sind wie Ordner, sinnvoll zum Strukturieren des Projekts
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
@@ -36,5 +39,3 @@ View weiß auch nichts von Model
 - Server in eigenes Package
 
 # Fragen für Feedback:
-- Server in neues Package? Wie mach ich dann Sachen wie Sequence.java zugänglich etc? Auch in eigenes Package?
-- Gleich Views etc. auch in eigenes Package
