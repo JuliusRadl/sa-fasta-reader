@@ -29,6 +29,7 @@ View weiß auch nichts von Model
 - DataInputStreams erlauben Übertragung primitver Datentypen zusammen mit deren Länge (auch bei Strings)
 - BufferedReader "stehlen" Bytes, lesen also evtl mehr als als gewünscht
 - PrintWriter sind nützlich, weil sie autoflushen können und automatisch Zeilenumbrüche für BufferedReader anhängen
+- Benutze Strategy-Pattern, um Verhalten von Runnable zu ändern
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?

@@ -6,15 +6,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import com.radl.sa.interfaces.SequenceWritable;
+
 public class FastaParseProducer implements Runnable {
 
 	// File statt Path, um "Time Of Read vs Time of Use" Probleme zu vermeiden
 	private File fastaFile;
-	private ObjectOutputStream oos;
 	
-	public FastaParseProducer(File fastaFile, ObjectOutputStream oos) {
+	// strategy patter: exchangable method for writing sequenz to different streams
+	private SequenceWritable sw;
+	
+	public FastaParseProducer(File fastaFile, SequenceWritable sw) {
 		this.fastaFile = fastaFile;
-		this.oos = oos;
+		this.sw = sw;
 	}
 
 	public void run() {
@@ -74,8 +78,10 @@ public class FastaParseProducer implements Runnable {
 					System.out.println(
 									"Schreibe Sequenz " +
 									seq.getHeader().substring(0, 20) + "...");
-					oos.writeObject(seq);
-					oos.flush();
+					
+					// strategy pattern
+					sw.write(seq);
+					
 					// TODO entfernen
 					Thread.sleep(10);
 				}
@@ -99,7 +105,8 @@ public class FastaParseProducer implements Runnable {
 		} finally {
 			try {
 				// OOS schließen, um EOF-Signal zu geben, dass keine weiteren Objekte kommen
-				oos.close();
+				// strategy pattern
+				sw.close();
 			} catch (IOException e) {
 				System.err.println("Fehler beim Schließen des Output-Streams.");
 				e.printStackTrace();

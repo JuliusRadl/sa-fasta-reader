@@ -18,6 +18,7 @@ import com.radl.sa.interfaces.FastaModellable;
 import com.radl.sa.services.BackupParseProducer;
 import com.radl.sa.services.FastaParseConsumer;
 import com.radl.sa.services.FastaParseProducer;
+import com.radl.sa.services.LocalSequenceWriter;
 import com.radl.sa.services.Sequence;
 
 public class FastaModel implements FastaModellable {
@@ -46,7 +47,9 @@ public class FastaModel implements FastaModellable {
 		Runnable producer;
 		// nicht == verwenden, das testet, ob es dasselbe Objekt ist
 		if (extension.equals("fasta")) {
-			producer = new FastaParseProducer(f, oos);
+			// strategy pattern
+			LocalSequenceWriter lsw = new LocalSequenceWriter(oos);
+			producer = new FastaParseProducer(f, lsw);
 		} else {
 			producer = new BackupParseProducer(f, oos);
 		}
