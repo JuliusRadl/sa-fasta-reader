@@ -188,11 +188,7 @@ public class FastaView extends JFrame implements FastaViewable {
 		});
 		
 		bSave.addActionListener(event -> {
-			int returnVal = fileChooser.showSaveDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            File file = fileChooser.getSelectedFile();
-	            fc.pressedSaveButton(file);
-			}
+            fc.pressedSaveButton();
 		});
 		
 		bBrowser.addActionListener(event -> {
@@ -200,11 +196,7 @@ public class FastaView extends JFrame implements FastaViewable {
 		});
 		
 		bBlast.addActionListener(event -> {
-			int returnVal = fileChooser.showSaveDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            File file = fileChooser.getSelectedFile();
-	            fc.pressedBlastButton(file);
-			}
+            fc.pressedBlastButton();
 		});
 	}
 	

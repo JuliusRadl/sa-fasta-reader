@@ -13,7 +13,6 @@
 - Funktionen zum Datenfluss im Model sind ok, aber Business Logik gehört eigentlich in Controller
 - Interfaces nach Konvention mit I im Namen beginnen
 - Exceptions im Interface definieren ist super!
-- 
 
 # Sonstiges:
 - Repository auf Github laden
@@ -25,6 +24,11 @@ View weiß auch nichts von Model
 - Action Listener bleiben im View, der den Controller benachrichtigt
 - Zeilenweisen, tabellerischen CLI-Output auch zeilenweise mit BufferedReader auslesen, byteweise unnötig
 - Packages sind wie Ordner, sinnvoll zum Strukturieren des Projekts
+- Streams nicht mischen bei der Socket-Kommunikation
+- Kommunikation kann man zb über ein length prefix regeln
+- DataInputStreams erlauben Übertragung primitver Datentypen zusammen mit deren Länge (auch bei Strings)
+- BufferedReader "stehlen" Bytes, lesen also evtl mehr als als gewünscht
+- PrintWriter sind nützlich, weil sie autoflushen können und automatisch Zeilenumbrüche für BufferedReader anhängen
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
@@ -35,7 +39,7 @@ View weiß auch nichts von Model
 - Spalten Datentypen zuweisen & sortierbar machen
 
 # To do A3:
-- Sequence.java, Worker etc. in eigenes Package
-- Server in eigenes Package
+- Base64 Encoding für die Byte-Übertragung
+- 
 
 # Fragen für Feedback:

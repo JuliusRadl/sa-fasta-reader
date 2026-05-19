@@ -2,6 +2,8 @@ package com.radl.sa.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -18,35 +20,29 @@ public class FastaServerThread implements Runnable {
 	}
 
 	public void run() {
-		// TODO debuggen
-		System.out.println("thread gestartet");
 
 		// open input & output  streams with try-with-resources to guarantee closing
 		// PrintWriter autoflushes with true as second argument
 		try (
-				BufferedReader br = new BufferedReader(
-						new InputStreamReader(client.getInputStream()));
-				PrintWriter pw = new PrintWriter(
-						new OutputStreamWriter(client.getOutputStream()), true);
+				DataInputStream dis = new DataInputStream(client.getInputStream());
+				DataOutputStream dos = new DataOutputStream(client.getOutputStream());
 		) {
-			// TODO debuggen, hier hängts
-			System.out.println("initiate conversation");
+			// Data streams automatically send and read length for primitives and Strings
+			// int greeting_length = dis.readInt();
 			
 			// initiate conversation with client
-			String input = br.readLine();
+			String input = dis.readUTF();
 			String output = FastaServerProtocol.processInput(input);
-			pw.println(output);
-			
-			// TODO debuggen, wird nicht erreicht
-			System.out.println("conversation initiated");
+			dos.writeUTF(output);
 			
 			while (true) {
-				input = br.readLine();
-				output = FastaServerProtocol.processInput(input);
-				pw.println(output);
+				input = dis.readUTF();
 				
-				// end thread
-				if (output.equals(FastaServerProtocol.EXIT_SIGNAL)) {
+				output = FastaServerProtocol.processInput(input);
+				dos.writeUTF(output);
+				
+				// end thread (depending on input, not output)
+				if (input.equals(FastaServerProtocol.EXIT_SIGNAL)) {
 					break;
 				}
 			}

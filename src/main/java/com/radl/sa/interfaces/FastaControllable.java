@@ -9,13 +9,14 @@ public interface FastaControllable {
 
 	public void pressedParseButton();
 	
-	public void pressedSaveButton(File f);
+	public void pressedSaveButton();
+
+	public void pressedBlastButton();
+
+	public void pressedBrowserButton();
 	
 	public void setModel(FastaModellable fm);
 	
 	public void setView(FastaViewable fv);
 
-	public void pressedBlastButton(File file);
-
-	public void pressedBrowserButton();
 }

@@ -13,7 +13,7 @@ public class App {
 		FastaView fv = new FastaView("FASTA-Manager", 500);
 		fv.setVisible(true);
 		
-		FastaOnlineController fc = new FastaOnlineController(fm, fv);
+		OnlineMainController fc = new OnlineMainController(fm, fv);
 		// TODO soll der View wirklich was vom Controller wissen?
 		fv.setController(fc);
 		
