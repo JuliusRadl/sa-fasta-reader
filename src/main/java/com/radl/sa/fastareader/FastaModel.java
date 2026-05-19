@@ -1,6 +1,8 @@
 package com.radl.sa.fastareader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,7 +20,8 @@ import com.radl.sa.interfaces.FastaModellable;
 import com.radl.sa.services.BackupParseProducer;
 import com.radl.sa.services.FastaParseConsumer;
 import com.radl.sa.services.FastaParseProducer;
-import com.radl.sa.services.LocalSequenceWriter;
+import com.radl.sa.services.ObjectSequenceReader;
+import com.radl.sa.services.ObjectSequenceWriter;
 import com.radl.sa.services.Sequence;
 
 public class FastaModel implements FastaModellable {
@@ -40,6 +43,9 @@ public class FastaModel implements FastaModellable {
 		pis.connect(pos);
 		ObjectOutputStream oos = new ObjectOutputStream(pos);
 		ObjectInputStream ois = new ObjectInputStream(pis);
+		
+		// BufferedReader for file
+		BufferedReader br = new BufferedReader(new FileReader(f));
 
 		// kein Input Validation hier, ist glaub ich eher Aufgabe des Controllers
 		int extPos = f.getName().lastIndexOf(".");
@@ -47,13 +53,16 @@ public class FastaModel implements FastaModellable {
 		Runnable producer;
 		// nicht == verwenden, das testet, ob es dasselbe Objekt ist
 		if (extension.equals("fasta")) {
-			// strategy pattern
-			LocalSequenceWriter lsw = new LocalSequenceWriter(oos);
-			producer = new FastaParseProducer(f, lsw);
+			// producer with strategy pattern
+			ObjectSequenceWriter osw = new ObjectSequenceWriter(oos);	
+			producer = new FastaParseProducer(br, osw, f.getName());
 		} else {
-			producer = new BackupParseProducer(f, oos);
+			producer = new BackupParseProducer(br, oos);
 		}
-		Runnable consumer = new FastaParseConsumer(ois, seqList);
+		
+		// consumer with strategy pattern
+		ObjectSequenceReader osr = new ObjectSequenceReader(ois);
+		Runnable consumer = new FastaParseConsumer(osr, seqList);
 	
 
 		// CompletableFuture eig vor allem für Verkettung von async Tasks, ohne
@@ -65,6 +74,11 @@ public class FastaModel implements FastaModellable {
 		// Synchronisierung, damit aufrufbar von SwingWorker
 		// Futures zu einem Objekt kombinieren und darauf warten
 		CompletableFuture.allOf(prodFuture, conFuture).join();
+		
+		// close resources
+		oos.close();
+		ois.close();
+		br.close();
 	}
 	
 	

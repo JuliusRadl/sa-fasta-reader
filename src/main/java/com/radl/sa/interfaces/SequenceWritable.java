@@ -8,6 +8,5 @@ public interface SequenceWritable {
 	
 	public void write(Sequence seq) throws IOException;
 	
-	public void close() throws IOException;
-
+	public void signalEnd() throws IOException;
 }

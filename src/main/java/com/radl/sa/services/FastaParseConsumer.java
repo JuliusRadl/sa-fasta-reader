@@ -5,13 +5,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
+import com.radl.sa.interfaces.SequenceReadable;
+
 public class FastaParseConsumer implements Runnable {
 
-	private ObjectInputStream ois;
+	private SequenceReadable sr;
 	private ArrayList<Sequence> seqList;
 
-	public FastaParseConsumer(ObjectInputStream ois, ArrayList<Sequence> seqList) {
-		this.ois = ois;
+	public FastaParseConsumer(SequenceReadable sr, ArrayList<Sequence> seqList) {
+		this.sr = sr;
 		this.seqList = seqList;
 	}
 
@@ -19,13 +21,13 @@ public class FastaParseConsumer implements Runnable {
 
 		try {
 			while(true) {
-				Sequence seq = (Sequence) ois.readObject();
+				Sequence seq = sr.read();
 				System.out.println("Lese Sequenz " + seq.getHeader().substring(0, 20) + "...");
 				seqList.add(seq);
 				Thread.sleep(10);
 			}
 		} catch (EOFException e) {
-			System.out.println("ObjectOutputStream geschlossen, keine weiteren Sequenzen.");
+			System.out.println("Keine weiteren Sequenzen.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e1) {
@@ -33,13 +35,6 @@ public class FastaParseConsumer implements Runnable {
 		} catch (InterruptedException e) {
 			// Falls sleep interrupted
 			e.printStackTrace();
-		} finally {
-			try {
-				ois.close();
-			} catch (IOException e) {
-				System.err.println("Fehler beim Schließen des Input-Streams");
-				e.printStackTrace();
-			}
 		}
 	}
 }

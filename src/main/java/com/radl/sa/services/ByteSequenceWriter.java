@@ -6,11 +6,11 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import com.radl.sa.interfaces.SequenceWritable;
 
-public class OnlineSequenceWriter implements SequenceWritable {
+public class ByteSequenceWriter implements SequenceWritable {
 
 	private final DataOutputStream dos;
 	
-	public OnlineSequenceWriter(DataOutputStream dos) {
+	public ByteSequenceWriter(DataOutputStream dos) {
 		
 		this.dos = dos;
 	}
@@ -22,8 +22,10 @@ public class OnlineSequenceWriter implements SequenceWritable {
 		dos.write(bytes);
 	}
 	
-	public void close() throws IOException {
+	public void signalEnd() throws IOException {
 		
-		dos.close();
+		byte[] bytes = SerializationUtils.serialize(new EndOfStreamToken());
+		dos.writeInt(bytes.length);
+		dos.write(bytes);
 	}
 }
