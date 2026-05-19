@@ -11,26 +11,26 @@ import com.radl.sa.interfaces.SequenceWritable;
 public class FastaParseProducer implements Runnable {
 
 	// File statt Path, um "Time Of Read vs Time of Use" Probleme zu vermeiden
-	private File fastaFile;
+	// private File fastaFile;
 	
-	// strategy patter: exchangable method for writing sequenz to different streams
+	// BufferedReader instead of File so as to be independent of files, just parse text
+	private BufferedReader br;
+	
+	// strategy pattern: exchangable method for writing sequence objects to different stream types
 	private SequenceWritable sw;
 	
-	public FastaParseProducer(File fastaFile, SequenceWritable sw) {
-		this.fastaFile = fastaFile;
+	private String filename;
+	
+	public FastaParseProducer(BufferedReader br, SequenceWritable sw, String filename) {
+		this.br = br;
 		this.sw = sw;
+		this.filename = filename;
 	}
 
 	public void run() {
-		if (!fastaFile.exists()) {
-			System.out.println("Keine gültige Datei");
-			return;
-		}
 		
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(fastaFile));
 			StringBuffer sb = new StringBuffer();
-			String filename = fastaFile.getName().toString();
 
 			// Checken ob die Fasta überhaupt was enthält
 			// und das Zeug am Anfang wegschneiden
@@ -87,31 +87,33 @@ public class FastaParseProducer implements Runnable {
 				}
 				// Beim Ende der Datei aus Schleife springen
 				if (line == null) {
+					// new solution to send eof signal: end token
+					sw.signalEnd();
+					
 					System.out.println("Ende der Datei erreicht.\nEinlesen beendet.");
 					break;
 				}
 				// Zeile an Stringbuilder anhängen
 				sb.append(line);
 			}
-			// BufferedReader schließen
-			br.close();
 		} catch (IOException e) {
 			System.err.println("Fehler beim Einlesen der Datei");
 		} catch (InterruptedException e) {
 			// Falls mein sleep interrupted wurde
 			e.printStackTrace();
+		}
 		// Garantieren, dass Stream geschlossen wird, und zwar durch Producer,
 		// um Kontrolle über EOF-Signal im Thread zu haben
-		} finally {
-			try {
-				// OOS schließen, um EOF-Signal zu geben, dass keine weiteren Objekte kommen
-				// strategy pattern
-				sw.close();
-			} catch (IOException e) {
-				System.err.println("Fehler beim Schließen des Output-Streams.");
-				e.printStackTrace();
-			}
-		}
+//		finally {
+//			try {
+//				// OOS schließen, um EOF-Signal zu geben, dass keine weiteren Objekte kommen
+//				// strategy pattern
+//				sw.close();
+//			} catch (IOException e) {
+//				System.err.println("Fehler beim Schließen des Output-Streams.");
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 }

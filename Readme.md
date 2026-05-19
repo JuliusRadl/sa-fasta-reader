@@ -30,6 +30,7 @@ View weiß auch nichts von Model
 - BufferedReader "stehlen" Bytes, lesen also evtl mehr als als gewünscht
 - PrintWriter sind nützlich, weil sie autoflushen können und automatisch Zeilenumbrüche für BufferedReader anhängen
 - Benutze Strategy-Pattern, um Verhalten von Runnable zu ändern
+- Poison Pill Pattern, um Ende über Streams zu signalisieren, ohne sie zu schließen (damit der Erzeuger des Streams ihn später schließen kann)
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
@@ -41,6 +42,7 @@ View weiß auch nichts von Model
 
 # To do A3:
 - Base64 Encoding für die Byte-Übertragung
-- 
+- Parser umschreiben, sodass er nicht mehr von Datei abhängig ist, sondern von BufferedReader
+- BackupParser auch von BufferedReader abhängig machen
 
 # Fragen für Feedback:
