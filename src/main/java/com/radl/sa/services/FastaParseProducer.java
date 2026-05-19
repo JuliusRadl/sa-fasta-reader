@@ -40,7 +40,6 @@ public class FastaParseProducer implements Runnable {
 				// Rausspringen, falls Fasta leer
 				if (line == null) {
 					System.err.println("Fasta-Datei ist leer.\nEinlesen abgebrochen.");
-					br.close();
 					return;
 				}
 				line.trim();
@@ -69,7 +68,6 @@ public class FastaParseProducer implements Runnable {
 						System.err.println(
 								"Unvollständigen Header gelesen.\n" + 
 								"Einlesen abgebrochen.");
-						br.close();
 						return;
 					}					
 					String header = seqText.substring(0, seqPos + 1);

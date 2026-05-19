@@ -24,7 +24,7 @@ public class BackupParseProducer implements Runnable {
 		try {
 			
 			// reader is intentionally left open if error occurs in try block,
-			// so the BufferedReader can be closed by its creator instead
+			// so the BufferedReader can be closed by its owner instead
 			JsonReader jr = new JsonReader(br);
 			
 			Gson g = new Gson();

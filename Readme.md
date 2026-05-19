@@ -14,9 +14,6 @@
 - Interfaces nach Konvention mit I im Namen beginnen
 - Exceptions im Interface definieren ist super!
 
-# Sonstiges:
-- Repository auf Github laden
-
 # Erkenntnisse:
 - Sinn von MVC ist es, Darstellung und Logik zu entkoppeln. Das Modell soll nichts von allem andere wissen
 - Bei MVP noch stärker: View komplett dumb, kann nur Presenter über Clicks etc. benachrichtigen, der dann alles weitere handelt,
@@ -27,22 +24,28 @@ View weiß auch nichts von Model
 - Streams nicht mischen bei der Socket-Kommunikation
 - Kommunikation kann man zb über ein length prefix regeln
 - DataInputStreams erlauben Übertragung primitver Datentypen zusammen mit deren Länge (auch bei Strings)
+- Bei Sockets immer DataInputStreams verwenden, damit Daten verschiedener Typen übertragen werden können, nicht nur zb Strings
 - BufferedReader "stehlen" Bytes, lesen also evtl mehr als als gewünscht
 - PrintWriter sind nützlich, weil sie autoflushen können und automatisch Zeilenumbrüche für BufferedReader anhängen
 - Benutze Strategy-Pattern, um Verhalten von Runnable zu ändern
 - Poison Pill Pattern, um Ende über Streams zu signalisieren, ohne sie zu schließen (damit der Erzeuger des Streams ihn später schließen kann)
+- Nicht jede Architektur-Optimierung lohnt sich: Zwei neue Consumer/Producer für Client/Server zu schreiben, wäre definitiv einfacher gewesen als Strategy + Poison Pill Pattern 
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
 - Alle direkten Zugriffe (auch auf MVC-Objekte) durch getter (und evtl setter) ersetzen
 - Fehler-Anzeige mit SwingWorkern handeln...
+- Methoden mit Logik in Controller integrieren
 
 # To do A2:
 - Spalten Datentypen zuweisen & sortierbar machen
 
 # To do A3:
 - Base64 Encoding für die Byte-Übertragung
-- Parser umschreiben, sodass er nicht mehr von Datei abhängig ist, sondern von BufferedReader
-- BackupParser auch von BufferedReader abhängig machen
+- (Parser so umschreiben, dass sie von Strings abhängig sind)
+- Sender schreiben, der Zeile für Zeile mit writeUTF an den Socket schreibt und am Ende ein Schlusssignal sendet
+- ByteParser schreiben, der von DataInputStream abhängig ist und auf ein Schlusssignal wartet
+- ByteConsumer schreiben, der von DataInputStream abhängig ist und auf EndOfStreamToken wartet
+- SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren
 
 # Fragen für Feedback:
