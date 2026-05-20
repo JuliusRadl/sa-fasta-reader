@@ -43,14 +43,12 @@ View weiß auch nichts von Model
 
 # To do A3:
 - Base64 Encoding für die Byte-Übertragung
-- (Parser so umschreiben, dass sie von Strings abhängig sind)
-- Sender schreiben, der Zeile für Zeile mit writeUTF an den Socket schreibt und am Ende ein Schlusssignal sendet
-- ByteParser schreiben, der von DataInputStream abhängig ist und auf ein Schlusssignal wartet
-- ByteConsumer schreiben, der von DataInputStream abhängig ist und auf EndOfStreamToken wartet
-- SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren (oder so lassen)
 - Observer-Pattern (update()-Methode) in Services, um Ergebnisse zu übergeben, anstatt Liste zu übergeben, in die geschrieben wird
-- Client & Server Protocol schreiben
-- Verschiedene SwingWorker in eigene Funktionen auslagern, die File als Input nehmen, und pressedButton Funktionen (oder Chat command handler) rufen diese Funktionen auf
+- Client Protocol definieren (Akzeptable commands client side, müssen nicht genau gleich wie beim Server sein)
+- Online-Blast implementieren (analog zu online parsing)
+- Restliche Server commands implementieren (time etc.)
+- Anstatt nur signalEnd() auch signalError mit ErrorToken implementieren, um client zu benachrichtigen, dass was schief gegangen ist ()
+- Error Popups durch Swing Worker erzeugen, wenn was bei client-server communication schief gegangen ist
 
 # Fragen für Feedback:
 - Sinnvoller, für jede Anfrage einen eigenen Socket aufzumachen, oder am Anfang Verbindung zu etablieren (zusammen mit DataStreams als Instanzvariablen)?
