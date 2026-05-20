@@ -33,7 +33,8 @@ public class FastaServerThread implements Runnable {
 		try (DataInputStream dis = new DataInputStream(client.getInputStream());
 				DataOutputStream dos = new DataOutputStream(client.getOutputStream());
 				client;) {
-			// Data streams automatically send and read length for primitives and Strings
+			// DataInputStreams/DataOutputStreams automatically send and read
+			// length for primitives and Strings
 			// int greeting_length = dis.readInt();
 
 			// receive file into tmp file
@@ -49,7 +50,7 @@ public class FastaServerThread implements Runnable {
 			}
 
 			String input = dis.readUTF();
-			String output = FastaServerProtocol.processInput(input);
+			String output = ServerProtocol.processInput(input);
 			dos.writeUTF(output);
 
 		} catch (IOException e) {

@@ -1,5 +1,6 @@
 package com.radl.sa.server;
 
-public class BlastServer {
+public class ClientProtocol {
 
+	
 }

@@ -14,42 +14,112 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import javax.swing.SwingWorker;
 
 import com.radl.sa.interfaces.FastaControllable;
-import com.radl.sa.server.FastaServerProtocol;
+import com.radl.sa.server.ServerProtocol;
+import com.radl.sa.server.ClientProtocol;
 import com.radl.sa.server.FileSender;
 import com.radl.sa.services.BlastService;
 import com.radl.sa.services.ByteSequenceReader;
 import com.radl.sa.services.FastaParseConsumer;
+import com.radl.sa.services.PropertiesLoader;
 
-public class OnlineMainController implements FastaControllable {
+public class OnlineMainController {
 
 	private FastaModellable fm;
-	private FastaViewable fv;
+	private OnlineView fv;
+	
+	private ClientProtocol cp;
+	private Socket client;
+	
+	// TODO .env reference with hostnames and port etc
 	
 	private String fastaHost = "localhost";
 	private int fastaPort = 12345;
+	
+	private Properties props;
 
-	public OnlineMainController(FastaModellable fm, FastaViewable fg) {
+	public OnlineMainController(FastaModellable fm, OnlineView fg)  {
 
 		setModel(fm);
 		setView(fg);
+		
+		// initialize command handler
+		cp = new ClientProtocol();
+		
+		// get properties
+		try {
+			props = PropertiesLoader.loadProps();
+		} catch (IOException e) {
+			String msg = "Failed to read app.properties file";
+			System.err.println(msg);
+			e.printStackTrace();
+		}
+	}
+	
+	// connect to server
+	public void pressedConnectButton() {
+		// get host and port
+		String hostname = props.getProperty("hostname");
+		int port = Integer.parseInt(props.getProperty("port"));
+
+		// open socket 
+		try {
+			client = new Socket(hostname, port);
+			createPopUp("Erfolgreich verbunden!");
+		} catch (UnknownHostException e) {
+			createPopUp("Host unbekannt!");
+			e.printStackTrace();
+		} catch (IOException e) {
+			createPopUp("Fehler bei Socketerzeugung");
+			e.printStackTrace();
+		}
+	}
+	
+	// send command
+	public void pressedCommandButton() {
+		// check if server connection established
+		
+		// open command pane
+		
+		// read command
+		
+		// send command to server
+		
+		// i won't implement the sendFile command, since it requires A checking
+		// whether a sendFile command was sent client-side, then opening a file dialogue
+		// before communicating with the server, or B first sending the sendFile
+		// command, then pressing a button to open a file dialogue and sending
+		// the file. Both options seem terrible
+		
+		// on the other hand, i always have to check the command client-side,
+		// since the client needs to know what type of data the server will respond with
 	}
 
 	public void pressedParseButton() {
+		// check if server connection established
+		
+		// pass appropriate command to command handler
+		
+		// get local file handle from view
+		File f = fv.openFileDialogue();
+		if (f == null) return;
 		
 		// setup socket with try-with-resources
 		try (Socket server = new Socket(fastaHost, fastaPort)) {
@@ -65,9 +135,6 @@ public class OnlineMainController implements FastaControllable {
 			try (DataInputStream dis = new DataInputStream(server.getInputStream());
 					DataOutputStream dos = new DataOutputStream(server.getOutputStream());
 			) {
-				// get local file handle from view
-				File f = fv.openFileDialogue();
-				if (f == null) return;
 				
 				// send file to server
 				FileSender fs = new FileSender(f, dos);
@@ -82,7 +149,7 @@ public class OnlineMainController implements FastaControllable {
 				System.out.println("Zahl der lokalen Sequenzobjekte: " + fm.getSeqList().size());
 				
 				// break with two way handshake (wait for response to exit signal)
-				dos.writeUTF(FastaServerProtocol.EXIT_SIGNAL);
+				dos.writeUTF(ServerProtocol.EXIT_SIGNAL);
 				System.out.println(dis.readUTF());
 			}
 			
@@ -246,12 +313,19 @@ public class OnlineMainController implements FastaControllable {
 		sw.execute();
 	}
 
-	public void setView(FastaViewable fv) {
+	public void setView(OnlineView fv) {
 		this.fv = fv;
 	}
 
 	public void setModel(FastaModellable fm) {
 		this.fm = fm;
+	}
+	
+	public void createPopUp(String title) {
+		ConfirmationPopupView cpv = new ConfirmationPopupView(title);
+		ConfirmationPopupController cpc = new ConfirmationPopupController(cpv);
+		cpv.setController(cpc);
+		cpv.setVisible(true);
 	}
 
 }

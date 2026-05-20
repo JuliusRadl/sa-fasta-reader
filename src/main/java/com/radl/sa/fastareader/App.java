@@ -5,12 +5,12 @@ import com.radl.sa.fastareader.*;
 
 public class App {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		
 		FastaModel fm = new FastaModel();
 		
 		FlatLightLaf.setup();
-		FastaView fv = new FastaView("FASTA-Manager", 500);
+		OnlineView fv = new OnlineView("FASTA-Manager", 500);
 		fv.setVisible(true);
 		
 		OnlineMainController fc = new OnlineMainController(fm, fv);

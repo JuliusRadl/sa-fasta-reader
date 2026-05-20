@@ -30,6 +30,7 @@ View weiß auch nichts von Model
 - Benutze Strategy-Pattern, um Verhalten von Runnable zu ändern
 - Poison Pill Pattern, um Ende über Streams zu signalisieren, ohne sie zu schließen (damit der Erzeuger des Streams ihn später schließen kann)
 - Nicht jede Architektur-Optimierung lohnt sich: Zwei neue Consumer/Producer für Client/Server zu schreiben, wäre definitiv einfacher gewesen als Strategy + Poison Pill Pattern 
+- Observer-Pattern (update()-Methode) in Services, um Ergebnisse zu übergeben, anstatt Liste zu übergeben, in die geschrieben wird
 
 # To do A1:
 - Duplicate Checking mit Hashmaps?
@@ -47,5 +48,7 @@ View weiß auch nichts von Model
 - ByteParser schreiben, der von DataInputStream abhängig ist und auf ein Schlusssignal wartet
 - ByteConsumer schreiben, der von DataInputStream abhängig ist und auf EndOfStreamToken wartet
 - SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren (oder so lassen)
+- Observer-Pattern (update()-Methode) in Services, um Ergebnisse zu übergeben, anstatt Liste zu übergeben, in die geschrieben wird
+- Client & Server Protocol schreiben
 
 # Fragen für Feedback:

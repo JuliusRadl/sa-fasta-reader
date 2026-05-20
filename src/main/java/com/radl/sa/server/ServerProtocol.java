@@ -1,6 +1,6 @@
 package com.radl.sa.server;
 
-public class FastaServerProtocol {
+public class ServerProtocol {
 	
 	public final static String GREET_MESSAGE = "Hallo vom Server!";
 	

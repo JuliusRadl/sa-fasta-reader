@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 class ConfirmationPopupView extends JFrame {
 	
 	private static final int size = 100;
-	private static final String notification = "Bitte bestätigen";
 	private static final int button_inset = 10;
 	
 	private JButton bConfirm;
@@ -23,8 +22,8 @@ class ConfirmationPopupView extends JFrame {
 	
 	private ConfirmationPopupController cpc;
 	
-	public ConfirmationPopupView(String title) {
-		super(title);
+	public ConfirmationPopupView(String notification) {
+		super("1 neue Nachricht");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setSize((int) (size * 2), size);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();

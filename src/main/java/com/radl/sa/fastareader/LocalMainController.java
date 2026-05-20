@@ -251,4 +251,11 @@ public class LocalMainController implements FastaControllable {
 	public void setModel(FastaModellable fm) {
 		this.fm = fm;
 	}
+	
+	public void createPopUp(String title) {
+		ConfirmationPopupView cpv = new ConfirmationPopupView(title);
+		ConfirmationPopupController cpc = new ConfirmationPopupController(cpv);
+		cpv.setController(cpc);
+		cpv.setVisible(true);
+	}
 }

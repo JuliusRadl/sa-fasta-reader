@@ -38,13 +38,13 @@ import com.radl.sa.interfaces.FastaControllable;
 import com.radl.sa.interfaces.FastaViewable;
 import com.radl.sa.services.Sequence;
 
-public class FastaView extends JFrame implements FastaViewable {
+public class OnlineView extends JFrame {
 	
 	public final int DEFAULT_INSET = 10;
 	public final String DEFAULT_STATUS = "© Julius Radl";
 
 	private DefaultListModel<Sequence> mSeqList;
-	private FastaControllable fc;
+	private OnlineMainController fc;
 	
 	// File Chooser wiederverwenden!
 	private final JFileChooser fileChooser;
@@ -57,9 +57,9 @@ public class FastaView extends JFrame implements FastaViewable {
 	
 	// Liste, um Buttons alle auf einmal zu disablen
 	private ArrayList<JButton> bl;
-	private JButton bParse, bSave, bBrowser, bBlast;
+	private JButton bConnect, bSave, bBrowser, bBlast;
 
-	public FastaView(String title, int hoehe) {
+	public OnlineView(String title, int hoehe) {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize((int) (hoehe * 0.7), hoehe);
@@ -111,9 +111,9 @@ public class FastaView extends JFrame implements FastaViewable {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(0, 2));
 		
-		bParse = new JButton("FASTA einlesen");
-		bParse.setAlignmentX(CENTER_ALIGNMENT);
-		bl.add(bParse);
+		bConnect = new JButton("Verbinden");
+		bConnect.setAlignmentX(CENTER_ALIGNMENT);
+		bl.add(bConnect);
 		
 		bSave = new JButton("Sequenz-Liste speichern");
 		bSave.setAlignmentX(CENTER_ALIGNMENT);
@@ -128,7 +128,7 @@ public class FastaView extends JFrame implements FastaViewable {
 		bl.add(bBlast);
 		
 		// Zum Panel hinzufügen
-		buttonPanel.add(bParse);
+		buttonPanel.add(bConnect);
 		buttonPanel.add(bSave);
 		buttonPanel.add(bBrowser);
 		buttonPanel.add(bBlast);
@@ -183,8 +183,8 @@ public class FastaView extends JFrame implements FastaViewable {
 		});
 		
 		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
-		bParse.addActionListener(event -> {
-			fc.pressedParseButton();			
+		bConnect.addActionListener(event -> {
+			fc.pressedConnectButton();			
 		});
 		
 		bSave.addActionListener(event -> {
@@ -214,7 +214,7 @@ public class FastaView extends JFrame implements FastaViewable {
 		}
 	}
 	
-	public void setController(FastaControllable fc) {
+	public void setController(OnlineMainController fc) {
 		this.fc = fc;
 	}
 	
@@ -236,22 +236,4 @@ public class FastaView extends JFrame implements FastaViewable {
 			return null;
 		}
 	}
-}
-
-// Wir extenden den Default Renderer, um zb blaue Highlights zu haben
-// Neuer Renderer, um was anderes als nur toString() der Sequenzen
-// anzeigen zu können
-class SequenceRenderer extends DefaultListCellRenderer {
-
-	@Override
-	public Component getListCellRendererComponent(
-			JList<?> list, Object value, int index, boolean isSelected,
-			boolean cellHasFocus) {
-
-		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		Sequence seq = (Sequence) value;
-		setText(seq.getHeader());
-
-		return this;
-	}	
 }
