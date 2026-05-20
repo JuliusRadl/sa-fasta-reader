@@ -11,6 +11,10 @@ public class ByteSequenceReader implements SequenceReadable {
 	
 	private DataInputStream dis;
 	
+	public ByteSequenceReader(DataInputStream dis) {
+		this.dis = dis;
+	}
+	
 	public Sequence read() throws IOException, ClassNotFoundException, EOFException {
 		
 		int object_length = dis.readInt();

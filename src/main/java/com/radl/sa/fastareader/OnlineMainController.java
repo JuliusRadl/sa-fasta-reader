@@ -30,7 +30,10 @@ import javax.swing.SwingWorker;
 
 import com.radl.sa.interfaces.FastaControllable;
 import com.radl.sa.server.FastaServerProtocol;
+import com.radl.sa.server.FileSender;
 import com.radl.sa.services.BlastService;
+import com.radl.sa.services.ByteSequenceReader;
+import com.radl.sa.services.FastaParseConsumer;
 
 public class OnlineMainController implements FastaControllable {
 
@@ -62,16 +65,21 @@ public class OnlineMainController implements FastaControllable {
 			try (DataInputStream dis = new DataInputStream(server.getInputStream());
 					DataOutputStream dos = new DataOutputStream(server.getOutputStream());
 			) {
-				// write some message
-				dos.writeUTF("Hallo!");
+				// get local file handle from view
+				File f = fv.openFileDialogue();
+				if (f == null) return;
 				
-				// read response
-				String input = dis.readUTF();
+				// send file to server
+				FileSender fs = new FileSender(f, dos);
+				fs.send();
 				
-				// print response
-				System.out.println(input);
+				// receive sequence objects with consumer
+				ByteSequenceReader bsr = new ByteSequenceReader(dis);
+				FastaParseConsumer fpc = new FastaParseConsumer(bsr, fm.getSeqList());
+				fpc.run();
 				
-				// loop
+				// display sequence object
+				System.out.println("Zahl der lokalen Sequenzobjekte: " + fm.getSeqList().size());
 				
 				// break with two way handshake (wait for response to exit signal)
 				dos.writeUTF(FastaServerProtocol.EXIT_SIGNAL);

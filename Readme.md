@@ -46,6 +46,6 @@ View weiß auch nichts von Model
 - Sender schreiben, der Zeile für Zeile mit writeUTF an den Socket schreibt und am Ende ein Schlusssignal sendet
 - ByteParser schreiben, der von DataInputStream abhängig ist und auf ein Schlusssignal wartet
 - ByteConsumer schreiben, der von DataInputStream abhängig ist und auf EndOfStreamToken wartet
-- SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren
+- SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren (oder so lassen)
 
 # Fragen für Feedback:
