@@ -50,5 +50,7 @@ View weiß auch nichts von Model
 - SequenceReadable & Writeable wieder entfernen und in entsprechende Parser & Consumer integrieren (oder so lassen)
 - Observer-Pattern (update()-Methode) in Services, um Ergebnisse zu übergeben, anstatt Liste zu übergeben, in die geschrieben wird
 - Client & Server Protocol schreiben
+- Verschiedene SwingWorker in eigene Funktionen auslagern, die File als Input nehmen, und pressedButton Funktionen (oder Chat command handler) rufen diese Funktionen auf
 
 # Fragen für Feedback:
+- Sinnvoller, für jede Anfrage einen eigenen Socket aufzumachen, oder am Anfang Verbindung zu etablieren (zusammen mit DataStreams als Instanzvariablen)?

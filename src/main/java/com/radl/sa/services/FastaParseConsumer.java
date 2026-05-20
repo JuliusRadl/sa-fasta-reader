@@ -27,7 +27,8 @@ public class FastaParseConsumer implements Runnable {
 				Thread.sleep(10);
 			}
 		} catch (EOFException e) {
-			System.out.println("Keine weiteren Sequenzen.");
+			String msg = ("End of sequence object stream reached.");
+			System.out.println(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e1) {

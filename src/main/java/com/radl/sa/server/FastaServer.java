@@ -26,16 +26,14 @@ public class FastaServer {
 		while (true) {
 			// connect to Client
 			Socket client = server.accept();
+			ConnectionResourcesHandler crh = new ConnectionResourcesHandler(client);
 			
 			// status update
 			System.out.println("Anfrage von " + client.getLocalAddress().toString());
 			
 			// start individual server thread
-			FastaServerThread fsv = new FastaServerThread(client);
+			FastaServerThread fsv = new FastaServerThread(crh);
 			ex.submit(fsv);
-			
-			// TODO debuggen
-			System.out.println("thread submitted");
 		}
 	}
 }

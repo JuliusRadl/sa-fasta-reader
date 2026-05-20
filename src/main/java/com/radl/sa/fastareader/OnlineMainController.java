@@ -34,6 +34,7 @@ import javax.swing.SwingWorker;
 import com.radl.sa.interfaces.FastaControllable;
 import com.radl.sa.server.ServerProtocol;
 import com.radl.sa.server.ClientProtocol;
+import com.radl.sa.server.ConnectionResourcesHandler;
 import com.radl.sa.server.FileSender;
 import com.radl.sa.services.BlastService;
 import com.radl.sa.services.ByteSequenceReader;
@@ -42,28 +43,52 @@ import com.radl.sa.services.PropertiesLoader;
 
 public class OnlineMainController {
 
+	/*
+	 * Controller for the client-server version of the fasta programm
+	 * 
+	 * Does not implement the controller interface of the local version, because the
+	 * exercise requires a fundamentally different gui and controller
+	 * 
+	 * Establish individual socket connection per request to avoid threads
+	 * interfering with each others data streams. chat system with with a single
+	 * connection as described on moodle doesn't make sense because exercise requires
+	 * multiple async server requests, which doesn't work with a single connection
+	 * 
+	 * No parsing or blasting function via server chat, because it makes no sense to
+	 * first give a command sendFile and then have the user select a file via gui.
+	 * Why would you go from a chat communication to a gui file selection and then
+	 * later to a gui update with the results? Might be possible to have a separate
+	 * function
+	 * 
+	 * Eine funktion a, die eine datei nimmt und einen swingworker startet eine
+	 * funktion b, die auf button click einen file chooser aufruft und dann a
+	 * aufruft Eine funktion c, die das kommando aufnimmt und ein filehandle erzeugt
+	 * und damit a aufruft
+	 */
+
 	private FastaModellable fm;
 	private OnlineView fv;
-	
+
 	private ClientProtocol cp;
-	private Socket client;
-	
+
 	// TODO .env reference with hostnames and port etc
-	
+
 	private String fastaHost = "localhost";
 	private int fastaPort = 12345;
-	
+
 	private Properties props;
 
-	public OnlineMainController(FastaModellable fm, OnlineView fg)  {
+	public OnlineMainController(FastaModellable fm, OnlineView fg) {
 
 		setModel(fm);
 		setView(fg);
-		
+
+		// TODO maybe unnecessary
 		// initialize command handler
 		cp = new ClientProtocol();
-		
+
 		// get properties
+		// catch io error here so it is clear where it came from
 		try {
 			props = PropertiesLoader.loadProps();
 		} catch (IOException e) {
@@ -72,103 +97,135 @@ public class OnlineMainController {
 			e.printStackTrace();
 		}
 	}
-	
-	// connect to server
-	public void pressedConnectButton() {
-		// get host and port
-		String hostname = props.getProperty("hostname");
-		int port = Integer.parseInt(props.getProperty("port"));
 
-		// open socket 
-		try {
-			client = new Socket(hostname, port);
-			createPopUp("Erfolgreich verbunden!");
-		} catch (UnknownHostException e) {
-			createPopUp("Host unbekannt!");
-			e.printStackTrace();
-		} catch (IOException e) {
-			createPopUp("Fehler bei Socketerzeugung");
-			e.printStackTrace();
-		}
-	}
-	
 	// send command
 	public void pressedCommandButton() {
 		// check if server connection established
-		
+
 		// open command pane
-		
+
 		// read command
-		
+
 		// send command to server
-		
+
 		// i won't implement the sendFile command, since it requires A checking
 		// whether a sendFile command was sent client-side, then opening a file dialogue
 		// before communicating with the server, or B first sending the sendFile
 		// command, then pressing a button to open a file dialogue and sending
 		// the file. Both options seem terrible
-		
+
 		// on the other hand, i always have to check the command client-side,
 		// since the client needs to know what type of data the server will respond with
 	}
 
-	public void pressedParseButton() {
-		// check if server connection established
-		
-		// pass appropriate command to command handler
-		
-		// get local file handle from view
-		File f = fv.openFileDialogue();
-		if (f == null) return;
-		
-		// setup socket with try-with-resources
-		try (Socket server = new Socket(fastaHost, fastaPort)) {
-	
-			// print connection confirmation
-			System.out.println("Erfolgreich mit " + fastaHost + " auf Port " +
-								fastaPort + " verbunden!");
+	// TODO define client commands in client protocol
+	public void interpretCommand(String command) {
+
+		try {
+			switch (command) {
 			
-			// open streams
-			// use PrintWriter to avoid appending line breaks
-			// to communication (as expected from BufferedReader.readLine()
-			// and always flushing the BufferedReader
-			try (DataInputStream dis = new DataInputStream(server.getInputStream());
-					DataOutputStream dos = new DataOutputStream(server.getOutputStream());
-			) {
-				
-				// send file to server
-				FileSender fs = new FileSender(f, dos);
-				fs.send();
-				
-				// receive sequence objects with consumer
-				ByteSequenceReader bsr = new ByteSequenceReader(dis);
-				FastaParseConsumer fpc = new FastaParseConsumer(bsr, fm.getSeqList());
-				fpc.run();
-				
-				// display sequence object
-				System.out.println("Zahl der lokalen Sequenzobjekte: " + fm.getSeqList().size());
-				
-				// break with two way handshake (wait for response to exit signal)
-				dos.writeUTF(ServerProtocol.EXIT_SIGNAL);
-				System.out.println(dis.readUTF());
+			// simple commands are handled right here
+			// resources are also created on case by case basis, in case
+			// followup functions need to use and thus create resources in their
+			// own thread. the alternatives are A try-with-resources before the
+			// switch, which would conflict with functions using resources in
+			// separate threads, or B having each case close the resources in
+			// dividually
+			case ServerProtocol.TIME_COMMAND: {
+				try (ConnectionResourcesHandler crh = new ConnectionResourcesHandler(props)) {
+					crh.getDos().writeUTF(ServerProtocol.TIME_COMMAND);
+					System.out.println(crh.getDis().readUTF());
+				}
 			}
 			
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// more complex commands require individual functions
+			// TODO parse filepath instead of calling button function
+			case ServerProtocol.PARSE_COMMAND : {
+				pressedParseButton();
+			}
+			
+			} // end of switch cases
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			String msg = "Fehler beim Empfangen der Antwort.";
+			System.err.println(msg);
 			e.printStackTrace();
 		}
 	}
 
-	public void pressedSaveButton() {
+	public void pressedParseButton() {
+
+		// get local file handle from view
+		File f = fv.openFileDialogue();
+		if (f == null)
+			return;
+		startParseWorker(f);
+	}
+
+	public void startParseWorker(File f) {
 		
+		fv.setButtonsEnabled(false);
+		fv.displayProgress(true, "Server is parsing...");
+		
+		SwingWorker<String, Integer> sw = new SwingWorker<String, Integer>() {
+			
+			public String doInBackground() {
+				
+				// create connection resources in thread, since the thread knows
+				// how long it needs them
+				try (ConnectionResourcesHandler crh = new ConnectionResourcesHandler(props)) {
+
+					// send command
+					crh.getDos().writeUTF(ServerProtocol.PARSE_COMMAND);
+					
+					// send file to server
+					FileSender fs = new FileSender(f, crh.getDos());
+					fs.send();
+					
+					// receive sequence objects with consumer
+					ByteSequenceReader bsr = new ByteSequenceReader(crh.getDis());
+					FastaParseConsumer fpc = new FastaParseConsumer(bsr, fm.getSeqList());
+					fpc.run();
+					
+					return "Server is done parsing.";
+				// catch resource exceptions here
+				} catch (UnknownHostException e) {
+					String msg = "Unknown Host.";
+					System.err.println(msg);
+					e.printStackTrace();
+					return msg;
+				} catch (IOException e) {
+					String msg = "Error using client-server data streams.";
+					System.err.println(msg);
+					e.printStackTrace();
+					return msg;
+				}
+			}
+			
+			public void done() {
+				
+				fv.updateSeqList(fm.getSeqList());
+				fv.setButtonsEnabled(true);
+				try {
+					fv.displayProgress(false, get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		sw.execute();
+	}
+
+	public void pressedSaveButton() {
+
 		// get file
 		File f = fv.openFileDialogue();
-		
+
 		// null check file
-		if (f == null) { return; }
+		if (f == null) {
+			return;
+		}
 
 		fv.setButtonsEnabled(false);
 		fv.displayProgress(true, "Saving...");
@@ -256,12 +313,14 @@ public class OnlineMainController {
 	// bleiben auch im FastaController und gehen nicht in
 	// den BlastTableController
 	public void pressedBlastButton() {
-		
+
 		// get file
 		File f = fv.openFileDialogue();
-		
+
 		// null check file
-		if (f == null) { return; }
+		if (f == null) {
+			return;
+		}
 
 		// Swingworker
 		fv.setButtonsEnabled(false);
@@ -320,7 +379,7 @@ public class OnlineMainController {
 	public void setModel(FastaModellable fm) {
 		this.fm = fm;
 	}
-	
+
 	public void createPopUp(String title) {
 		ConfirmationPopupView cpv = new ConfirmationPopupView(title);
 		ConfirmationPopupController cpc = new ConfirmationPopupController(cpv);

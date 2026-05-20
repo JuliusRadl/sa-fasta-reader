@@ -99,6 +99,13 @@ public class FastaParseProducer implements Runnable {
 		} catch (InterruptedException e) {
 			// Falls mein sleep interrupted wurde
 			e.printStackTrace();
+		} finally {
+			try {
+				sw.signalEnd();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		// Garantieren, dass Stream geschlossen wird, und zwar durch Producer,
 		// um Kontrolle über EOF-Signal im Thread zu haben

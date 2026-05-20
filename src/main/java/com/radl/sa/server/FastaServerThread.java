@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,43 +19,39 @@ import com.radl.sa.services.FastaParseConsumer;
 import com.radl.sa.services.FastaParseProducer;
 
 public class FastaServerThread implements Runnable {
+	
+	/*
+	 * One thread per socket / client. 
+	 */
 
-	private final Socket client;
+	private final ConnectionResourcesHandler crh;
 
-	public FastaServerThread(Socket client) {
+	public FastaServerThread(ConnectionResourcesHandler crh) {
 
-		this.client = client;
+		this.crh = crh;
 	}
 
 	public void run() {
 
 		// open input & output streams with try-with-resources to guarantee closing
-		// also pass client to try with resources to guarantee closing
-		try (DataInputStream dis = new DataInputStream(client.getInputStream());
-				DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-				client;) {
-			// DataInputStreams/DataOutputStreams automatically send and read
-			// length for primitives and Strings
-			// int greeting_length = dis.readInt();
+		try (crh) {
+			
+			ServerProtocol sp = new ServerProtocol(crh);
 
-			// receive file into tmp file
-			FileReceiver fr = new FileReceiver(dis);
-			File f = fr.receive();
-			System.out.println(f.getAbsolutePath());
-
-			// parse file
-			try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-				ByteSequenceWriter bsw = new ByteSequenceWriter(dos);
-				FastaParseProducer fpp = new FastaParseProducer(br, bsw, f.getName());
-				fpp.run();
+			// command loop
+			while (true) {
+				String command = crh.getDis().readUTF();
+				sp.processCommand(command);
 			}
-
-			String input = dis.readUTF();
-			String output = ServerProtocol.processInput(input);
-			dos.writeUTF(output);
-
+			// catch eof separately, even though it is a subclass of io exception,
+			// because eof is regular exception we expect when the client closes
+			// the socket
+		} catch (EOFException e) {
+			String msg = ("Connection was closed.");
+			System.err.println(msg);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			String msg = ("IO error in server thread.");
+			System.err.println(msg);
 			e.printStackTrace();
 		}
 	}

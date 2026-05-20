@@ -7,6 +7,13 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public class PropertiesLoader {
+	
+	/*
+	 * Static class for loading .properties file from a predefined location
+	 * within the project's / working directory
+	 * 
+	 * Uses Paths to easily construct paths independent of OS
+	 */
 
 	public static Properties loadProps() throws IOException {
 		// get wd path

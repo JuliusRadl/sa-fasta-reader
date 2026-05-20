@@ -111,7 +111,7 @@ public class OnlineView extends JFrame {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(0, 2));
 		
-		bConnect = new JButton("Verbinden");
+		bConnect = new JButton("Parse fasta");
 		bConnect.setAlignmentX(CENTER_ALIGNMENT);
 		bl.add(bConnect);
 		
@@ -184,7 +184,7 @@ public class OnlineView extends JFrame {
 		
 		// Listeners bleiben im View, keine UI-Logik oder Elemente im Controller
 		bConnect.addActionListener(event -> {
-			fc.pressedConnectButton();			
+			fc.pressedParseButton();			
 		});
 		
 		bSave.addActionListener(event -> {
